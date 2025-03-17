@@ -1,0 +1,19 @@
+{
+  "name": "internal",
+  "version": "1.0.0",
+  "description": "Waste management system assessment",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AnkushSharmaGuragai/Waste-Management-System.git"
+  },
+  "author": "Aryan",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/AnkushSharmaGuragai/Waste-Management-System/issues"
+  },
+  "homepage": "https://github.com/AnkushSharmaGuragai/Waste-Management-System#readme"
+}
