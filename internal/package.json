@@ -15,5 +15,9 @@
   "bugs": {
     "url": "https://github.com/AnkushSharmaGuragai/Waste-Management-System/issues"
   },
-  "homepage": "https://github.com/AnkushSharmaGuragai/Waste-Management-System#readme"
+  "homepage": "https://github.com/AnkushSharmaGuragai/Waste-Management-System#readme",
+  "dependencies": {
+    "dotenv": "^16.4.7",
+    "internal": "file:"
+  }
 }

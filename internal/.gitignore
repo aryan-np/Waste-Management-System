@@ -1,0 +1,4 @@
+.env
+node_modules/
+
+PORT = 8000
