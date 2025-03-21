@@ -1,16 +1,17 @@
 const express = require('express');
-const router = require('./Routes/User');
-require("dotenv").config();
+const userRoutes = require('./Routes/User');
+require('dotenv').config();
 const app = express();
 
-app.listen((process.env.PORT),()=> console.log("Serner started"));
+// Import the connection function
+const { connectToDatabase } = require('./database');  // Import the function correctly
 
+// Call the connectToDatabase function
+connectToDatabase();
 
+app.use(express.json());
+app.use('/api/user/', userRoutes);
 
-
-
-
-
-
-
-
+app.listen(process.env.PORT, () => {
+    console.log('Server started at port ' + process.env.PORT);
+});

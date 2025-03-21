@@ -1,5 +1,15 @@
 const mongoose = require('mongoose');
 
-mongoose.connect('mongodb://localhost:27017/WasteManagement')
-    .then(() => console.log('Connected to MongoDB'))
-    .catch(err => console.error(err));
+async function connectToDatabase() {
+    try {
+        await mongoose.connect('mongodb://127.0.0.1:27017/test', {
+            useNewUrlParser: true,
+            useUnifiedTopology: true
+        });
+        console.log('MongoDB connected');
+    } catch (err) {
+        console.error('MongoDB connection error:', err);
+    }
+}
+
+module.exports= {connectToDatabase}
