@@ -1,5 +1,10 @@
-const User = require('../Model/User');
 const bcrypt = require("bcrypt");
+const crypto = require("crypto");
+
+const User = require('../Model/User');
+
+const{sendMail,validateEmail,generateOtpMail} = require("./mail")
+
 
 const handleLogin = async (req, res) => {
     try {
@@ -40,6 +45,8 @@ const handleSignup = async (req, res) => {
         console.log("Incoming request:", req.body); // Log request body
 
         const { name, email, password } = req.body;
+        const emailVerification = await validateEmail(email);
+        
         if (!name || !email || !password) {
             return res.status(400).json({ message: "All fields are required" });
         }
@@ -49,10 +56,14 @@ const handleSignup = async (req, res) => {
         console.log("Existing user check:", existingUser); // Debug existing user
 
         if (existingUser) {
-            return res.status(400).json({ message: "User already exists" });
+            return res.status(400).json({ messagae: "User already exists" });
         }
+        if (emailVerification.valid) {
+             // Hash the password before saving
+        // const {otp , otpMail}= generateOtpMail();
+        // const subject = "USER REgistration OTP";
+        // sendMail(email,subject,otpMail);
 
-        // Hash the password before saving
         const salt = await bcrypt.genSalt(10); // Generate salt for bcrypt hashing
         const hashedPassword = await bcrypt.hash(password, salt); // Hash the password with the salt
 
@@ -67,6 +78,10 @@ const handleSignup = async (req, res) => {
         await newUser.save();
         console.log("User created successfully");
         res.status(201).json({ message: "User created successfully" });
+        }
+       else{
+        return res.status(400).json({ message: "invalid email" });
+       }
 
     } catch (err) {
         console.error("Error in signup:", err); // Log detailed error
@@ -74,4 +89,13 @@ const handleSignup = async (req, res) => {
     }
 };
 
-module.exports = { handleLogin, handleSignup };
+const handleSignupOtp = async (req,res)=>{
+    const {email,otp} = req.body;
+        if( await validateOtp(otp,email)){
+            res.status(201).json({"otpValidated":true})
+        }
+        else res.status(401).json({"otpValidated":false})
+}
+
+
+module.exports = { handleLogin, handleSignup,handleSignupOtp };

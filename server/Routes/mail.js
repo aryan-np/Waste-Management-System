@@ -1,9 +1,9 @@
-const express = require("express");
-const {handleForgotPassword}= require("../Controller/mail")
+// const express = require("express");
+// const {handleForgotPassword}= require("../Controller/mail")
 
-const router = express.Router();
+// const router = express.Router();
 
-router.post('/forgotPassword',handleForgotPassword);
+// router.post('/forgotPassword',handleForgotPassword);
 
 
-module.exports = router;
+// module.exports = router;

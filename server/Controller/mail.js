@@ -1,9 +1,11 @@
 const nodemailer = require('nodemailer');
 const crypto = require('crypto');
+const bcrypt = require("bcrypt")
 let mbv = require("mailboxvalidator-nodejs");
 require('dotenv').config();
 
 const User= require("../Model/User")
+const Otp = require("../Model/otp")
 // Send email function (only text)
 const sendMail = async (to, subject, text) => {
     try {
@@ -63,17 +65,64 @@ const validateEmail = async (email) => {
     }
 };
 
-const handleForgotPassword =async(req,res)=>{
-    const {email} = req.body;
+const handleForgotPassword = async (req, res) => {
+    const { email } = req.body;
     const existingUser = await User.findOne({ email });
     console.log("Existing user check:", existingUser); // Debug existing user
 
-    if (existingUser) {
-        const verification =await validateEmail(email)
-    // console.log((await verification));
-    
-    if (verification.valid){
-    console.log("DEBBUUGEGGEHEDKNEDNI")
+    const verification = await validateEmail(email);
+
+    try {
+        // Invalidate all previous OTPs for the given email
+        const updatedOtp = await Otp.updateMany({ email }, { valid: false });
+        console.log("All previous OTPs invalidated");
+
+        if (verification.valid) {
+            if (existingUser) {
+                console.log("DEBUG: Sending OTP email");
+
+                const subject = "Request for PASSWORD RESET (DO NOT SHARE)";
+                const { otp, otpMail } = generateOtpMail();
+                await sendMail(email, subject, otpMail);
+
+                const newOtp = new Otp({
+                    email: email,
+                    otp: otp,
+                    valid: true,
+                });
+
+                await newOtp.save();
+                res.status(200).json({
+                    "status": true,
+                    "msg": "Password reset email sent successfully",
+                    "otp": otp
+                });
+            } else {
+                res.status(404).json({
+                    "status": false,
+                    "msg": "USER NOT FOUND IN SYSTEM"
+                });
+            }
+        } else {
+            console.log("ERROR: Invalid email");
+            res.status(400).json({
+                "status": false,
+                "msg": verification.reason
+            });
+        }
+    } catch (error) {
+        console.error("Error during OTP processing:", error);
+        res.status(500).json({
+            "status": false,
+            "msg": "An error occurred while processing the OTP."
+        });
+    }
+};
+
+
+
+
+const generateOtpMail = ()=>{
     const otp = crypto.randomInt(100000,999999);
     const otpMail = `
             Dear User,  
@@ -85,30 +134,33 @@ const handleForgotPassword =async(req,res)=>{
             Best regards,  
             Waste Management System
             `;
-    const subject = "Request for PASSWORD RESET (DO NOT SHARE)"
-    await sendMail(email,subject,otpMail);
-    res.status(200).json({"status":true,
-        "msg":"Password reset email sent successfully",
-    "otp":otp})
+    return {otp,otpMail}
+}
+
+const validateOtp = async(otp,email)=>{
+   const existingRequest =  await Otp.findOne({email})
+   if(existingRequest.valid){
+     if(otp===existingRequest.otp){ return true}
+   }
+   else return false;
+}
+
+const handleResetPassword= async (req,res)=>{
+    const {email,newPassword} = req.body;
+    const existingUser = await User.findOne({email});
+    if(existingUser){
+    const salt = await bcrypt.genSalt(10); // Generate salt for bcrypt hashing
+    const hashedPassword = await bcrypt.hash(newPassword, salt); // Hash the password with the salt
+    
+  
+    // Update the password field
+    existingUser.password = hashedPassword;
+    await existingUser.save(); // Save the updated user
+        res.status(201).json({ message: "Password Updated successfully" });
     }
-    else{
-        console.log("ERROR HERE");
-        res.status(400).json({
-            "stats":false,
-            "msg":verification.reason
-        })
-        }
+   else{
+    return res.status(400).json({ message: "PAssword Update failed" });
+   }
 }
-        
-    else{
-    res.status(404).json({
-        "stats":false,
-        "msg":"USER NOT FOUND IN SYSTEM"
-    })
-}
-}
-
-
-
 // Export sendMail function to be used in other files
-module.exports = { handleForgotPassword , validateEmail,sendMail}
+module.exports = { handleForgotPassword , validateEmail,sendMail,generateOtpMail,validateOtp,handleResetPassword}

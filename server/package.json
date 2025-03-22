@@ -14,8 +14,10 @@
     "bcryptjs": "^3.0.2",
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
+    "mailboxvalidator-nodejs": "^2.0.0",
     "mongodb": "^6.15.0",
     "mongoose": "^8.12.1",
+    "nodemailer": "^6.10.0",
     "nodemon": "^3.1.9",
     "server": "file:"
   }
