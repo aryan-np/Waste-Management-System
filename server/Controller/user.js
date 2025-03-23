@@ -2,6 +2,7 @@ const bcrypt = require("bcrypt");
 const crypto = require("crypto");
 
 const User = require('../Model/User');
+const Otp = require('../Model/otp')
 
 const{sendMail,validateEmail,generateOtpMail} = require("./mail")
 
@@ -40,62 +41,66 @@ const handleLogin = async (req, res) => {
 };
 
 
+// Step 1: Handle Signup - Send OTP
 const handleSignup = async (req, res) => {
     try {
-        console.log("Incoming request:", req.body); // Log request body
-
         const { name, email, password } = req.body;
-        const emailVerification = await validateEmail(email);
-        
+
         if (!name || !email || !password) {
             return res.status(400).json({ message: "All fields are required" });
         }
 
-        // Check if the user already exists
-        let existingUser = await User.findOne({ email });
-        console.log("Existing user check:", existingUser); // Debug existing user
-
+        // Check if user already exists
+        const existingUser = await User.findOne({ email });
         if (existingUser) {
-            return res.status(400).json({ messagae: "User already exists" });
+            return res.status(400).json({ message: "User already exists" });
         }
-        if (emailVerification.valid) {
-             // Hash the password before saving
-        // const {otp , otpMail}= generateOtpMail();
-        // const subject = "USER REgistration OTP";
-        // sendMail(email,subject,otpMail);
 
-        const salt = await bcrypt.genSalt(10); // Generate salt for bcrypt hashing
-        const hashedPassword = await bcrypt.hash(password, salt); // Hash the password with the salt
-
-        // Create a new user with hashed password
-        const newUser = new User({
-            name,
-            email,
-            password: hashedPassword // Store the hashed password
-        });
-
-        // Save the new user to the database
-        await newUser.save();
-        console.log("User created successfully");
-        res.status(201).json({ message: "User created successfully" });
+        // Validate email
+        const emailCheck = await validateEmail(email);
+        if (!emailCheck.valid) {
+            return res.status(400).json({ message: emailCheck.reason });
         }
-       else{
-        return res.status(400).json({ message: "invalid email" });
-       }
 
-    } catch (err) {
-        console.error("Error in signup:", err); // Log detailed error
-        res.status(500).json({ message: "Server error", error: err.message });
+        // Invalidate previous OTPs
+        await Otp.updateMany({ email }, { valid: false });
+
+        // Generate new OTP and send email
+        const { otp, otpMail } = generateOtpMail();
+        await sendMail(email, "Signup Verification OTP", otpMail);
+
+        // Save OTP in DB
+        const newOtp = new Otp({ email, otp, valid: true });
+        await newOtp.save();
+
+        res.status(200).json({ status: true, message: "OTP sent to email for verification" });
+
+    } catch (error) {
+        console.error("Error in signup:", error);
+        res.status(500).json({ status: false, message: "Server error" });
     }
 };
 
-const handleSignupOtp = async (req,res)=>{
-    const {email,otp} = req.body;
-        if( await validateOtp(otp,email)){
-            res.status(201).json({"otpValidated":true})
-        }
-        else res.status(401).json({"otpValidated":false})
-}
+// Step 2: Handle Signup OTP Verification & User Registration
+const handleSignupOtp = async (req, res) => {
+    try {
+        const { name, email, password } = req.body;
+
+        // Hash password
+        const salt = await bcrypt.genSalt(10);
+        const hashedPassword = await bcrypt.hash(password, salt);
+
+        // Create new user
+        const newUser = new User({ name, email, password: hashedPassword });
+        await newUser.save();
+
+        res.status(201).json({ status: true, message: "User registered successfully" });
+
+    } catch (error) {
+        console.error("Error in OTP verification/signup:", error);
+        res.status(500).json({ status: false, message: "Server error" });
+    }
+};
 
 
 module.exports = { handleLogin, handleSignup,handleSignupOtp };

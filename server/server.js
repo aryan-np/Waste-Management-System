@@ -5,6 +5,10 @@ require('dotenv').config();
 
 const app = express();
 
+const swaggerUi = require('swagger-ui-express');
+const swaggerDocument = require('./swagger.json');
+
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 // Import the connection function
 const { connectToDatabase } = require('./database');  // Import the function correctly
