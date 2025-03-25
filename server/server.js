@@ -1,5 +1,6 @@
 const express = require('express');
 const userRoutes = require('./Routes/User');
+const vehicleRoute = require('./Routes/vehicle')
 
 require('dotenv').config();
 
@@ -18,6 +19,9 @@ connectToDatabase();
 
 app.use(express.json());
 app.use('/api/user/', userRoutes);
+app.use('/api/routes/',vehicleRoute);
+
+
 
 
 app.listen(process.env.PORT, () => {

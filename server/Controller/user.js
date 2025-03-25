@@ -1,15 +1,21 @@
 const bcrypt = require("bcrypt");
 const crypto = require("crypto");
+const jwt = require("jsonwebtoken");
 
+
+require('dotenv').config();
 const User = require('../Model/User');
 const Otp = require('../Model/otp')
 
 const{sendMail,validateEmail,generateOtpMail} = require("./mail")
+const VehicleRoute = require("../Model/vehicle"); // VehicleRoute model
 
+
+const JWT_SECRET = process.env.JWT_SECRET;
 
 const handleLogin = async (req, res) => {
     try {
-        console.log("Incoming login request:", req.body); // Log request body
+        console.log("Incoming login request:", req.body);
 
         const { email, password } = req.body;
         if (!email || !password) {
@@ -18,24 +24,29 @@ const handleLogin = async (req, res) => {
 
         // Check if the user exists
         const existingUser = await User.findOne({ email });
-        console.log("Existing user check:", existingUser); // Debug existing user
-
         if (!existingUser) {
             return res.status(400).json({ message: "User not found" });
         }
 
         // Compare the entered password with the stored hashed password
         const isMatch = await bcrypt.compare(password, existingUser.password);
-        
         if (!isMatch) {
             return res.status(400).json({ message: "Invalid credentials" });
         }
 
-        console.log("Login successful");
-        res.status(200).json({ message: "Login successful" });
+        // Generate JWT Token
+        const token = jwt.sign(
+            { userId: existingUser._id, email: existingUser.email }, // Payload
+            JWT_SECRET, // Secret key
+            { expiresIn: "1h" } // Token expires in 1 hour
+        );
+        res.setHeader("Authorization", `Bearer ${token}`);
+
+        console.log("Login successful, token generated");
+        res.status(200).json({ message: "Login successful", token });
 
     } catch (err) {
-        console.error("Error in login:", err); // Log detailed error
+        console.error("Error in login:", err);
         res.status(500).json({ message: "Server error", error: err.message });
     }
 };
@@ -103,4 +114,38 @@ const handleSignupOtp = async (req, res) => {
 };
 
 
-module.exports = { handleLogin, handleSignup,handleSignupOtp };
+// Endpoint to handle route selection by email and route name
+const handleRouteSelection = async (req, res) => {
+    const { email, routeName } = req.body;  // Get email and routeName from request body
+
+    try {
+        // Find the user by email
+        const user = await User.findOne({ email });
+
+        // If user not found
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
+
+        // Find the route by route name
+        const route = await VehicleRoute.findOne({ routeName });
+
+        // If route not found
+        if (!route) {
+            return res.status(404).json({ message: "Route not found" });
+        }
+
+        // Update the user with the selected route
+        user.selectedRoute = route._id; // Store the route ID in the user document
+        await user.save();
+
+        res.status(200).json({ message: "Route selected successfully", user });
+    } catch (error) {
+        console.error("Error selecting route:", error);
+        res.status(500).json({ message: "Internal Server Error" });
+    }
+};
+
+
+
+module.exports = { handleLogin, handleSignup,handleSignupOtp,handleRouteSelection };

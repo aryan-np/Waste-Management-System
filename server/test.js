@@ -1,28 +1,51 @@
-let mbv = require("mailboxvalidator-nodejs");
-require('dotenv').config();
+const vehicleRoutes = [
+    {
+        location: "Kathmandu",
+        schedule: [
+            { day: "Monday", time: "07:00 AM - 09:00 AM" },
+            { day: "Thursday", time: "06:30 AM - 08:30 AM" }
+        ]
+    },
+    {
+        location: "Lalitpur",
+        schedule: [
+            { day: "Tuesday", time: "08:00 AM - 10:00 AM" },
+            { day: "Friday", time: "07:30 AM - 09:30 AM" }
+        ]
+    },
+    {
+        location: "Bhaktapur",
+        schedule: [
+            { day: "Wednesday", time: "06:45 AM - 08:45 AM" },
+            { day: "Saturday", time: "07:15 AM - 09:15 AM" }
+        ]
+    },
+    {
+        location: "Pokhara",
+        schedule: [
+            { day: "Monday", time: "09:00 AM - 11:00 AM" },
+            { day: "Thursday", time: "08:30 AM - 10:30 AM" }
+        ]
+    },
+    {
+        location: "Chitwan",
+        schedule: [
+            { day: "Sunday", time: "07:00 AM - 09:00 AM" },
+            { day: "Wednesday", time: "06:30 AM - 08:30 AM" }
+        ]
+    }
+];
 
-mbv.MailboxValidator_init(process.env.EMAIL_VALIDATOR_API_KEY);
+// Insert into MongoDB
+const VehicleRoute = require("./Model/vehicle");
 
-mbv.MailboxValidator_single_query("nparyan7@gmail.com")
-.then((data) => {
-	console.log("email_address: " + data.email_address);
-	console.log("domain: " + data.domain);
-	console.log("is_free: " + data.is_free);
-	console.log("is_syntax: " + data.is_syntax);
-	console.log("is_domain: " + data.is_domain);
-	console.log("is_smtp: " + data.is_smtp);
-	console.log("is_verified: " + data.is_verified);
-	console.log("is_server_down: " + data.is_server_down);
-	console.log("is_greylisted: " + data.is_greylisted);
-	console.log("is_disposable: " + data.is_disposable);
-	console.log("is_suppressed: " + data.is_suppressed);
-	console.log("is_role: " + data.is_role);
-	console.log("is_high_risk: " + data.is_high_risk);
-	console.log("is_catchall: " + data.is_catchall);
-	console.log("mailboxvalidator_score: " + data.mailboxvalidator_score);
-	console.log("time_taken: " + data.time_taken);
-	console.log("status: " + data.status);
-	console.log("credits_available: " + data.credits_available);})
-.catch((error) => {
-	console.log(error)
-});
+async function insertMockData() {
+    try {
+        await VehicleRoute.insertMany(vehicleRoutes);
+        console.log("Mock vehicle routes inserted successfully!");
+    } catch (error) {
+        console.error("Error inserting mock data:", error);
+    }
+}
+
+insertMockData();
