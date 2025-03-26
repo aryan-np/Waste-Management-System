@@ -6,6 +6,7 @@ const jwt = require("jsonwebtoken");
 require('dotenv').config();
 const User = require('../Model/User');
 const Otp = require('../Model/otp')
+const vehicleRoutes = require('../Model/vehicle')
 
 const{sendMail,validateEmail,generateOtpMail} = require("./mail")
 const VehicleRoute = require("../Model/vehicle"); // VehicleRoute model
@@ -146,6 +147,53 @@ const handleRouteSelection = async (req, res) => {
     }
 };
 
+const handleGetSchedules = async (req,res)=>{
+    const route = req.params.routeName;
+    const routes =await vehicleRoutes.findOne({routeName:route})
+    const schedules = routes.schedule;
+    console.log(schedules);
+    res.status(200).json({"schedules":schedules});  
+    
+}
+
+const handleGetUserProfile = async (req,res)=>{
+    const _id = req.params._id;
+    const user = await User.findOne({_id});
+    res.status(200).json({"user name":user.name,
+        "user email":user.email
+    })
+}
+
+const handleChangeRoute = async (req, res) => {
+    try {
+        const { email, newRouteName } = req.body;
+
+        // Find the new route by its name
+        const newRoute = await vehicleRoutes.findOne({ routeName: newRouteName });
+
+        // If the route doesn't exist, return an error
+        if (!newRoute) {
+            return res.status(404).json({ message: "Route not found" });
+        }
+
+        // Update user's selectedRoute with the new route's ID
+        const updatedUser = await User.findOneAndUpdate(
+            { email: email }, // Find by email
+            { $set: { selectedRoute: newRoute._id } }, // Update the selected route
+            { new: true, runValidators: true } // Return updated document
+        );
+
+        // If user is not found, return an error
+        if (!updatedUser) {
+            return res.status(404).json({ message: "User not found" });
+        }
+
+        res.status(200).json(updatedUser);
+    } catch (error) {
+        console.error("Error updating user:", error);
+        res.status(500).json({ message: "Internal server error" });
+    }
+};
 
 
-module.exports = { handleLogin, handleSignup,handleSignupOtp,handleRouteSelection };
+module.exports = { handleLogin, handleSignup,handleSignupOtp,handleRouteSelection,handleGetSchedules,handleGetUserProfile,handleChangeRoute};
