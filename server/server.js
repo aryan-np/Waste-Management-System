@@ -22,6 +22,8 @@ app.use('/api/user/', userRoutes);
 app.use('/api/routes/',vehicleRoute);
 
 
+const billRoutes = require('./Routes/billRoutes');
+app.use('/api/bill/', billRoutes);
 
 
 app.listen(process.env.PORT, () => {

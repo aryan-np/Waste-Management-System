@@ -16,9 +16,14 @@ const userSchema = new mongoose.Schema({
     },
     selectedRoute: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'VehicleRoute',  
+        ref: 'VehicleRoute',
+    },
+    dueAmount: {
+        type: Number,
+        required: true,
+        default: 0, // Default due amount is 0
     }
 });
 
-const User = mongoose.model('user', userSchema);
+const User = mongoose.model('User', userSchema);
 module.exports = User;

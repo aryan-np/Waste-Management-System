@@ -13,6 +13,7 @@
     "bcrypt": "^5.1.1",
     "bcryptjs": "^3.0.2",
     "dotenv": "^16.4.7",
+    "esewajs": "^1.0.12",
     "express": "^4.21.2",
     "jsonwebtoken": "^9.0.2",
     "mailboxvalidator-nodejs": "^2.0.0",
