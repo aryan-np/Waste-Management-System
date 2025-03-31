@@ -150,6 +150,7 @@ const handleRouteSelection = async (req, res) => {
 const handleGetSchedules = async (req,res)=>{
     const route = req.params.routeName;
     const routes =await vehicleRoutes.findOne({routeName:route})
+    console.log(routes)
     const schedules = routes.schedule;
     console.log(schedules);
     res.status(200).json({"schedules":schedules});  

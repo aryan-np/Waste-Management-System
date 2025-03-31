@@ -6,6 +6,8 @@ require('dotenv').config();
 
 const User= require("../Model/User")
 const Otp = require("../Model/otp")
+const vehicleRoutes = require('../Model/vehicle')
+
 // Send email function (only text)
 const sendMail = async (to, subject, text) => {
     try {
@@ -48,7 +50,7 @@ const validateEmail = async (email) => {
         console.log(email);
         // console.log(data);
 
-        // ✅ Fix: Ensure ALL conditions are checked correctly
+        // Fix: Ensure ALL conditions are checked correctly
         if (
             data.is_smtp === true &&  // SMTP check
             data.is_verified === true && // Verified email
@@ -162,5 +164,15 @@ const handleResetPassword= async (req,res)=>{
     return res.status(400).json({ message: "PAssword Update failed" });
    }
 }
+const handleGetCollectionNotification = async (req,res)=>{
+    console.log("Route hit")
+    const route = req.params.routeName;
+    console.log(route)
+    const routes =await vehicleRoutes.findOne({routeName:route})
+    console.log(routes)
+    const schedules = routes.schedule;
+    console.log(schedules);
+    res.status(200).json({"schedules":schedules}); 
+}
 // Export sendMail function to be used in other files
-module.exports = { handleForgotPassword , validateEmail,sendMail,generateOtpMail,validateOtp,handleResetPassword}
+module.exports = { handleForgotPassword , validateEmail,sendMail,generateOtpMail,validateOtp,handleResetPassword,handleGetCollectionNotification}

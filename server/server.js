@@ -8,6 +8,8 @@ const app = express();
 
 const swaggerUi = require('swagger-ui-express');
 const swaggerDocument = require('./swagger.json');
+require('./services/notificationService');
+
 
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
@@ -24,6 +26,7 @@ app.use('/api/routes/',vehicleRoute);
 
 const billRoutes = require('./Routes/billRoutes');
 app.use('/api/bill/', billRoutes);
+
 
 
 app.listen(process.env.PORT, () => {
