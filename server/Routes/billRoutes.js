@@ -3,7 +3,7 @@ const { initiateBillPayment, verifyPayment } = require("../Controller/billContro
 
 const router = express.Router();
 
-router.post("/initiate-payment", initiateBillPayment);
+router.post("/initiate-payment",  initiateBillPayment);
 router.post("/verify-payment", verifyPayment);
 
 module.exports = router;

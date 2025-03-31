@@ -10,3 +10,4 @@ const VehicleRouteSchema = new mongoose.Schema({
 });
 
 module.exports = mongoose.model("VehicleRoute", VehicleRouteSchema);
+
