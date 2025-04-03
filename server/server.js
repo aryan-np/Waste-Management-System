@@ -3,7 +3,7 @@ const userRoutes = require('./Routes/User');
 const vehicleRoute = require('./Routes/vehicle')
 const cors = require('cors');
 require('dotenv').config();
-
+const cookieParser = require("cookie-parser");
 const app = express();
 
 const swaggerUi = require('swagger-ui-express');
@@ -12,6 +12,7 @@ require('./services/notificationService');
 
 
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+app.use(cookieParser());
 
 app.use(cors({
     origin: 'http://127.0.0.1:5500',  // Your frontend URL

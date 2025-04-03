@@ -41,7 +41,13 @@ const handleLogin = async (req, res) => {
             JWT_SECRET, // Secret key
             { expiresIn: "1h" } // Token expires in 1 hour
         );
-        res.setHeader("Authorization", `Bearer ${token}`);
+        // res.setHeader("Authorization", `Bearer ${token}`);
+        res.cookie("Authorization", token, {
+            httpOnly: true,  
+            secure: process.env.NODE_ENV === "production", 
+            sameSite: "Strict", 
+            maxAge: 3600000, // 1 hour
+        });
         
         console.log("Login successful, token generated");
         res.status(200).json({ message: "Login successful", token });
@@ -158,11 +164,35 @@ const handleGetSchedules = async (req,res)=>{
 }
 
 const handleGetUserProfile = async (req,res)=>{
-    const _id = req.params._id;
-    const user = await User.findOne({_id});
-    res.status(200).json({"user name":user.name,
-        "user email":user.email
-    })
+    try {
+        // Get the token from cookies (named "Authorization")
+        const token = req.cookies.Authorization;
+
+        if (!token) {
+            return res.status(401).json({ message: "Unauthorized: No token found in cookies" });
+        }
+
+        // Verify and decode the JWT
+        const decoded = jwt.verify(token, process.env.JWT_SECRET); // Ensure JWT_SECRET is in .env
+        const userId = decoded.userId; 
+
+        // Find the user by ID
+        const user = await User.findById(userId);
+
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
+
+        // Respond with user details
+        res.status(200).json({
+            "user name": user.name,
+            "user email": user.email,
+            "user Route": user.selectedRoute
+        });
+
+    } catch (error) {
+        res.status(500).json({ message: "Internal Server Error", error: error.message });
+    }
 }
 
 const handleChangeRoute = async (req, res) => {
