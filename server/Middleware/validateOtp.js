@@ -1,5 +1,4 @@
 const Otp = require("../Model/otp");
-
 const validateOtpMiddleware = async (req, res, next) => {
     const { email, otp } = req.body;
     console.log("Received email:", email);
@@ -24,7 +23,7 @@ const validateOtpMiddleware = async (req, res, next) => {
         if (Number(existingRequest.otp) !== Number(otp)) {
             return res.status(401).json({ status: false, msg: "Invalid OTP" });
         }
-
+        console.log("validating the otp")
         // Invalidate the OTP after successful validation
         existingRequest.valid = false;
         await existingRequest.save();

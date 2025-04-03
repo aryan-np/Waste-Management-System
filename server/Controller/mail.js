@@ -73,6 +73,7 @@ const handleForgotPassword = async (req, res) => {
     console.log("Existing user check:", existingUser); // Debug existing user
 
     const verification = await validateEmail(email);
+    console.log("HERE")
 
     try {
         // Invalidate all previous OTPs for the given email

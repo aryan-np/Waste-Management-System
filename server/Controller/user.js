@@ -42,7 +42,7 @@ const handleLogin = async (req, res) => {
             { expiresIn: "1h" } // Token expires in 1 hour
         );
         res.setHeader("Authorization", `Bearer ${token}`);
-
+        
         console.log("Login successful, token generated");
         res.status(200).json({ message: "Login successful", token });
 

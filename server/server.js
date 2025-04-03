@@ -1,7 +1,7 @@
 const express = require('express');
 const userRoutes = require('./Routes/User');
 const vehicleRoute = require('./Routes/vehicle')
-
+const cors = require('cors');
 require('dotenv').config();
 
 const app = express();
@@ -12,6 +12,13 @@ require('./services/notificationService');
 
 
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+
+app.use(cors({
+    origin: 'http://127.0.0.1:5500',  // Your frontend URL
+    methods: ['GET', 'POST'],
+    allowedHeaders: ['Content-Type'],
+    credentials: true,  // Allow credentials to be included in the request
+}));
 
 // Import the connection function
 const { connectToDatabase } = require('./database');  // Import the function correctly
