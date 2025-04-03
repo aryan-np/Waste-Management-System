@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Waste Management System</title>
+    <link rel="stylesheet" href="index.css">
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+</head>
+<body>
+   <header class="header">
+    <nav class="navbar">
+        <a href="#">Contact</a>
+        <a href="#">Mission & Vision</a>
+        <a href="#">Recycling Info</a>
+        <a href="#">About us</a>
+    </nav>
+   </header>
+    <div class="background"></div>
+    <div class="container">
+        <div class="item">
+            <h2 class="logo"><i class='bx bxs-trash'></i> Waste Management System</h2>
+            <div class="text-item">
+                <h2>फोहोर व्यवस्थापन गरौं,<br><span>स्वच्छ नेपाल बनाऔं!</span></h2>
+                <p>Efficient waste disposal and recycling for a greener world.</p>
+            </div>
+        </div>
+        <div class="login-section">
+            <!-- Login Form -->
+            <div class="form-box login">
+                <form action="">
+                    <h2>Log In</h2>
+                    <div class="input-box">
+                        <span class="icon"><i class='bx bxs-envelope'></i></span>
+                        <input type="email" required>
+                        <label>Email</label>
+                    </div>
+                    <div class="input-box">
+                        <span class="icon"><i class='bx bxs-lock-alt'></i></span>
+                        <input type="password" required>
+                        <label>Password</label>
+                    </div>
+                    <button class="btn">Login</button>
+                    <div class="extra-options">
+                        <p><a href="#" class="forgot-password-link">Forgot Password?</a></p>
+                        <p>New to Waste Management? <a href="#" class="register-link">Sign Up</a></p>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Sign-Up Form -->
+            <div class="form-box register">
+                <form action="">
+                    <h2>Sign Up</h2>
+                    <div class="input-box">
+                        <span class="icon"><i class='bx bxs-user'></i></span>
+                        <input type="text" required>
+                        <label>Full Name</label>
+                    </div>
+                    <div class="input-box">
+                        <span class="icon"><i class='bx bxs-envelope'></i></span>
+                        <input type="email" required>
+                        <label>Email</label>
+                    </div>
+                    <div class="input-box">
+                        <span class="icon"><i class='bx bxs-lock-alt'></i></span>
+                        <input type="password" required>
+                        <label>Password</label>
+                    </div>
+                    <button class="btn sign-up-btn">Sign Up</button>
+                    <p>Already have an account? <a href="#" class="login-link">Log In</a></p>
+                </form>
+            </div>
+
+            <!-- Forgot Password Form -->
+            <div class="form-box forgot-password">
+                <form action="">
+                    <h2>Forgot Password</h2>
+                    <p>Enter your email to receive a reset link.</p>
+                    <div class="input-box">
+                        <span class="icon"><i class='bx bxs-envelope'></i></span>
+                        <input type="email" required>
+                        <label>Email</label>
+                    </div>
+                    <button class="btn send-reset-link">Send Reset Link</button>
+                    <p><a href="#" class="back-to-login">Back to Login</a></p>
+                </form>
+            </div>
+
+            <!-- OTP Form -->
+            <div class="form-box otp">
+                <form action="">
+                    <h2>Enter OTP</h2>
+                    <p>OTP has been sent to your email. Please enter the 6-digit code.</p>
+                    <div class="input-box">
+                        <span class="icon"><i class='bx bxs-key'></i></span>
+                        <input type="text" required maxlength="6" id="otp-input">
+                        <label>Enter OTP</label>
+                    </div>
+                    <button class="btn verify-otp">Verify OTP</button>
+                    <p class="resend-otp">Didn't receive OTP? <a href="#">Resend</a></p>
+                </form>
+            </div>
+        </div>
+    </div>
+    <script src="index.js"></script>
+</body>
+</html>
