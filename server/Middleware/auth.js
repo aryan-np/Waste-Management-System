@@ -1,23 +1,47 @@
 const jwt = require("jsonwebtoken");
-require('dotenv').config()
+const dotenv = require("dotenv");
+const cookieParser = require("cookie-parser");
+
+dotenv.config();
 const JWT_SECRET = process.env.JWT_SECRET;
 
 const isAuthenticated = (req, res, next) => {
-    const authHeader = req.header("Authorization");
+    // console.log('Incoming cookies:', req.cookies);
+  // console.log('Incoming headers:', req.headers);
+  
+  const token = req.cookies.Authorization || 
+                req.headers.authorization?.replace('Bearer ', '');
 
-    if (!authHeader || !authHeader.startsWith("Bearer ")) {
+  if (!token) {
+    console.error('No token found in:', {
+      cookies: req.cookies,
+      headers: req.headers
+    });
+    return res.status(401).json({ 
+      message: "Authentication required",
+      debug: {
+        receivedCookies: req.cookies,
+        receivedHeaders: req.headers
+      }
+    });
+}
+  
+    
+    
+
+    if (!token) {
+        console.log("Access denied. No token provided.")
         return res.status(401).json({ message: "Access denied. No token provided." });
     }
 
-    const token = authHeader.split(" ")[1]; // Extract JWT
     try {
         const decoded = jwt.verify(token, JWT_SECRET);
-        req.user = decoded; // Attach user data to request
-        next();
+        req.user = decoded;
+        console.log("AUthenticated") // Attach user data to request
+        next(); // Proceed to the next middleware/controller
     } catch (error) {
         return res.status(403).json({ message: "Invalid or expired token." });
     }
 };
 
-
-module.exports = {isAuthenticated};
+module.exports = { isAuthenticated };
