@@ -39,8 +39,8 @@ app.use('/api/user/', userRoutes);
 app.use('/api/routes/',vehicleRoute);
 
 
-const billRoutes = require('./Routes/billRoutes');
-app.use('/api/bill/', billRoutes);
+const paymentRoutes = require('./Routes/paymentRoutes');
+app.use('/payment', paymentRoutes);
 
 
 
