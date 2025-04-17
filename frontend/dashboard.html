@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Waste Management System - Dashboard</title>
+    <link rel="stylesheet" href="index.css">
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <link rel="stylesheet" href="dashboard.css">
+</head>
+<body>
+    <div class="dashboard-container">
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <i class='bx bxs-trash'></i> Waste Management
+            </div>
+            <ul class="sidebar-menu">
+                <li id="sidebar-dashboard" class="active"><i class='bx bxs-dashboard'></i> Dashboard</li>
+                <li id="sidebar-change-route"><i class='bx bx-map'></i> Change Route</li>
+                <li id="sidebar-profile"><i class='bx bx-user-circle'></i> Payment</li>
+                <li id="sidebar-settings"><i class='bx bx-cog'></i> Settings</li>
+                <li id="sidebar-logout"><i class='bx bx-log-out'></i> Logout</li>
+            </ul>
+        </div>
+
+        <div class="main-content">
+            <div class="top-bar">
+                <div class="profile-dropdown">
+                    <div class="profile-trigger">
+                        <img src="user-profile.png" alt="User Profile" class="profile-img">
+                        <div class="profile-name" id="greet">Welcome, User</div>
+                        <i class='bx bx-chevron-down'></i>
+                    </div>
+                    <div class="dropdown-content">
+                        <div class="dropdown-item"><strong>Username:</strong> <span id="dropdown-username">Sandesh Thapa</span></div>
+                        <div class="dropdown-item"><strong>Email:</strong> <span id="dropdown-email">thapasandesh996@gmail.com</span></div>
+                        <div class="dropdown-item"><strong>Route:</strong> <span id="dropdown-route">Budanilkantha-Naxal-Chabhil</span></div>
+                        <div class="dropdown-divider"></div>
+                        <div class="dropdown-item" id="dropdown-change-password"><i class='bx bx-key'></i> Change Password</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Dashboard Section -->
+            <div class="content-section" id="dashboard-section">
+                <h2>Dashboard Overview</h2>
+                <p>Welcome to your waste management system dashboard.</p>
+                <p id="current-route-display"></p>
+
+                <h3>Waste Collection Schedule</h3>
+                <div class="schedule-container" id="schedule-container">
+                    <!-- Schedule cards will be injected here via JS -->
+                </div>
+            </div>
+
+            
+
+            <!-- Change Route Section -->
+            <div class="content-section" id="route-section" style="display: none;">
+                <h2>Change Collection Route</h2>
+                <p id="current-route-display1"></p>
+                <p>Select a new route for waste collection.</p>
+                <div class="input-box">
+                    <span class="icon"><i class='bx bx-map'></i></span>
+                    <select id="route-dropdown" class="route-select">
+                        <option value="Budanilkantha-Naxal-Chabhil">Budanilkantha to Naxal to Chabhil</option>
+                        <option value="Naxal-Chabhil-Bhaktapur">Naxal to Chabhil to Bhaktapur</option>
+                        <option value="Chabhil-Bhaktapur-Lalitpur">Chabhil to Bhaktapur to Lalitpur</option>
+                        <option value="Bhaktapur-Lalitpur-Gongabu">Bhaktapur to Lalitpur to Gongabu</option>
+                        <option value="Lalitpur-Gongabu-Sundhara">Lalitpur to Gongabu to Sundhara</option>
+                        <option value="Gongabu-Sundhara-Kalanki">Gongabu to Sundhara to Kalanki</option>
+                        <option value="Sundhara-Kalanki-Koteshwor">Sundhara to Kalanki to Koteshwor</option>
+                        <option value="Kalanki-Koteshwor-Sundarijal">Kalanki to Koteshwor to Sundarijal</option>
+                        <option value="Koteshwor-Sundarijal-Budanilkantha">Koteshwor to Sundarijal to Budanilkantha</option>
+                        <option value="Sundarijal-Budanilkantha-Naxal">Sundarijal to Budanilkantha to Naxal</option>
+                    </select>
+                </div>
+                <button id="select-route-btn" class="btn" onclick="changeRoute()">Update Route</button>
+                <p id="route-status" class="status-message"></p>
+            </div>
+
+            <!-- Payment Section -->
+ <!-- Payment Section -->
+<div class="content-section" id="payment-section" style="display: none;">
+    <h2>Pay with eSewa</h2>
+    <div class="payment-card">
+        <div class="payment-details">
+            <h3>Payment Summary</h3>
+            <div class="detail-row">
+                <span>Service Charge:</span>
+                <span>Rs. <span id="payment-amount">100</span></span>
+            </div>
+            <div class="detail-row total">
+                <span>Total Amount:</span>
+                <span>Rs. <span id="payment-total">100</span></span>
+            </div>
+        </div>
+        
+        <button id="pay-with-esewa" class="btn esewa-btn">
+            <img src="https://esewa.com.np/common/images/esewa_logo.png" alt="eSewa Logo">
+            Pay with eSewa
+        </button>
+        <div id="payment-status" class="status-message"></div>
+    </div>
+</div>
+            <!-- Settings Section -->
+            <div class="content-section" id="settings-section" style="display: none;">
+                <h2>Settings</h2>
+                <p>This is the Settings section. Configure your preferences here.</p>
+            </div>
+        </div>
+    </div>
+
+    <script src="dashboard.js"></script>
+</body>
+</html>

@@ -1,4 +1,6 @@
 document.addEventListener("DOMContentLoaded", () => {
+    const BASE_URL = "http://127.0.0.1:8000";
+
     const forms = {
         login: document.querySelector(".form-box.login form"),
         register: document.querySelector(".form-box.register form"),
@@ -20,119 +22,169 @@ document.addEventListener("DOMContentLoaded", () => {
         backToLogin: document.querySelector(".back-to-login")
     };
 
-    // Form data storage variables
-    let loginEmail = '';
-    let loginPassword = '';
-    let registerName = '';
-    let registerEmail = '';
-    let registerPassword = '';
-    let otpCode = '';
-    let forgotPasswordEmail = '';
+    let otpRoute = "";
+    let otpBody = {};
 
-    // Show register form
     links.register.addEventListener("click", () => showForm("register"));
-    
-    // Show login form
     links.login.addEventListener("click", () => showForm("login"));
-    
-    // Show forgot password form
     links.forgotPassword.addEventListener("click", () => showForm("forgot-password"));
-    
-    // Back to login from forgot password
     links.backToLogin.addEventListener("click", () => showForm("login"));
 
-    // Register button handler
-    buttons.register.addEventListener("click", (event) => {
+    buttons.register.addEventListener("click", async (event) => {
         event.preventDefault();
-        // Storing register form data into variables
-        registerName = forms.register.querySelector("input[name='full-name']").value;
-        registerEmail = forms.register.querySelector("input[name='email']").value;
-        registerPassword = forms.register.querySelector("input[name='password']").value;
 
-        // Log data (For debugging or ready to hit the API)
-        console.log({ registerName, registerEmail, registerPassword });
+        const registerName = forms.register.querySelector("input[name='full-name']").value;
+        const registerEmail = forms.register.querySelector("input[name='email']").value;
+        const registerPassword = forms.register.querySelector("input[name='password']").value;
 
-        // After registering, move to OTP form
-        showForm("otp");
+        const body = {
+            name: registerName,
+            email: registerEmail,
+            password: registerPassword
+        };
+
+        try {
+            const response = await axios.post(`${BASE_URL}/api/user/signup`, body, {
+                withCredentials: true
+            });
+
+            console.log("Registration successful:", response.data);
+            otpRoute = `${BASE_URL}/api/user/validateSignupOtp`;
+            otpBody = body;
+
+            showPopup("✅ Registration successful! Proceeding to OTP verification...", 3000);
+
+            setTimeout(() => {
+                showForm("otp");
+            }, 3000);
+        } catch (error) {
+            console.error("Registration failed:", error.response || error);
+            alert("Registration failed. Please try again.");
+        }
     });
 
-    // OTP verification button handler
-    buttons.verifyOtp.addEventListener("click", (event) => {
+    buttons.verifyOtp.addEventListener("click", async (event) => {
         event.preventDefault();
-        // Storing OTP input into variable
-        otpCode = forms.otp.querySelector("input#otp-input").value;
+
+        const otpCode = forms.otp.querySelector("input#otp-input").value;
 
         if (otpCode.length === 6) {
-            // Log OTP and proceed (ready for backend integration)
-            console.log({ otpCode });
+            otpBody.otp = otpCode;
 
-            // After OTP verification, move to login form
-            alert("OTP Verified! You are now registered.");
-            showForm("login");
+            try {
+                const response = await axios.post(otpRoute, otpBody, {
+                    withCredentials: true
+                });
+
+                console.log("OTP verification successful:", response.data);
+                showPopup("✅ OTP Validation Success! Redirecting to Login...", 3000);
+
+                setTimeout(() => {
+                    showForm("login");
+                }, 3000);
+            } catch (error) {
+                console.error("OTP verification failed:", error.response || error);
+                alert("OTP verification failed. Please try again.");
+            }
         } else {
             alert("Please enter a valid 6-digit OTP.");
         }
     });
-
-    // Login button handler
-buttons.login.addEventListener("click", async (event) => {
-    event.preventDefault();
-    
-    // Storing login form data into variables
-    const loginEmail = forms.login.querySelector("input[type='email']").value;
-    const loginPassword = forms.login.querySelector("input[type='password']").value;
-
-    // Prepare the request body
-    const body = {
-        email: loginEmail,
-        password: loginPassword
-    };
-
-    // Sending POST request to the backend API
-    try {
-        const response = await fetch('http://localhost:8000/api/user/login', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(body)
-        });
-
-        // Check if the response is okay (status 200-299)
-        if (response.ok) {
-            const data = await response.json();
-            console.log('Login successful:', data);
-            
-            // Store token in a cookie
-            const token = data.token;
-            document.cookie = `Authorization=Bearer ${token}; path=/; max-age=${60 * 60 * 24}`; // Expires in 1 day
-
-            // Redirect to the dashboard page
-            window.location.href = "dashboard.html";
-        } else {
-            console.error('Login failed:', response.status, response.statusText);
-            // Handle login failure (e.g., show error message)
-            alert('Login failed. Please check your credentials.');
-        }
-    } catch (error) {
-        console.error('Error during login request:', error);
-        // Handle request error (e.g., show network error message)
-        alert('An error occurred. Please try again later.');
-    }
-});
-
-
-    // Forgot Password button handler
-    buttons.forgotPassword.addEventListener("click", (event) => {
+    buttons.login.addEventListener("click", async (event) => {
         event.preventDefault();
-        // Storing forgot password email into variable
-        forgotPasswordEmail = forms.forgotPassword.querySelector("input[type='email']").value;
+    
+        const loginEmail = forms.login.querySelector("input[type='email']").value;
+        const loginPassword = forms.login.querySelector("input[type='password']").value;
+    
+        const body = {
+            email: loginEmail,
+            password: loginPassword
+        };
+    
+        try {
+            const response = await axios.post(`${BASE_URL}/api/user/login`, body, {
+                withCredentials: true
+            });
+    
+            console.log("Login successful:", response.data);
+            showPopup("✅ Login successful! Redirecting to Dashboard...", 1000);
+    
+            const profileRes = await fetch(`${BASE_URL}/api/user/profile`, {
+                credentials: 'include'
+            });
+    
+            if (!profileRes.ok) throw new Error('Could not fetch profile');
+            const profile = await profileRes.json();
+            const userRoute = profile["user Route"];
+    
+            if (!userRoute) {
+                // redirect with firstTime flag
+                setTimeout(() => {
+                    window.location.href = "dashboard.html?firstTime=true";
+                }, 1000);
+            } else {
+                setTimeout(() => {
+                    window.location.href = "dashboard.html";
+                }, 1000);
+            }
+    
+        } catch (error) {
+            console.error("Login failed:", error.response || error);
+            alert("Login failed. Please check your credentials.");
+        }
+    });
+    
 
-        // Log forgot password data (ready to hit the API)
-        console.log({ forgotPasswordEmail });
+    buttons.forgotPassword.addEventListener("click", async (event) => {
+        event.preventDefault();
+
+        const forgotPasswordEmail = forms.forgotPassword.querySelector("input[type='email']").value;
+        const newPassword = forms.forgotPassword.querySelector("input[type='password']").value;
+
+        const body = {
+            email: forgotPasswordEmail,
+            newPassword: newPassword
+        };
+
+        try {
+            const response = await axios.post(`${BASE_URL}/api/user/forgotPassword`, body, {
+                withCredentials: true
+            });
+
+            console.log("Forgot password request successful:", response.data);
+            otpRoute = `${BASE_URL}/api/user/resetPassword`;
+            otpBody = body;
+
+            showPopup("✅ Reset link sent! Proceeding to OTP verification...", 3000);
+            setTimeout(() => {
+                showForm("otp");
+            }, 3000);
+        } catch (error) {
+            console.error("Forgot password failed:", error.response || error);
+            alert("Failed to send reset link. Please try again.");
+        }
     });
 
-    // Show specific form
+    function showPopup(message, duration) {
+        const popup = document.createElement("div");
+        popup.textContent = message;
+        popup.style.position = "fixed";
+        popup.style.top = "20px";
+        popup.style.left = "50%";
+        popup.style.transform = "translateX(-50%)";
+        popup.style.background = "#4CAF50";
+        popup.style.color = "white";
+        popup.style.padding = "10px 20px";
+        popup.style.borderRadius = "5px";
+        popup.style.zIndex = "1000";
+        popup.style.fontSize = "16px";
+        document.body.appendChild(popup);
+
+        setTimeout(() => {
+            popup.remove();
+        }, duration);
+    }
+
     function showForm(formType) {
         document.querySelector(".form-box.login").style.display = formType === "login" ? "block" : "none";
         document.querySelector(".form-box.register").style.display = formType === "register" ? "block" : "none";

@@ -8,11 +8,13 @@
 <body>
    <header class="header">
     <nav class="navbar">
-        <a href="#">Contact</a>
-        <a href="#">Mission & Vision</a>
-        <a href="#">Recycling Info</a>
-        <a href="#">About us</a>
-    </nav>
+        <a href="#" data-tooltip="📧 info@wastemanage.com\n📞 +977-9800000000">Contact</a>
+        <a href="#" data-tooltip="♻️ Our mission is to reduce waste\n🌿 Our vision is a clean and green Nepal">Mission & Vision</a>
+        <a href="#" data-tooltip="🧾 Learn how to sort and recycle\n♻️ Know what can and can’t be recycled">Recycling Info</a>
+        <!-- <a href="#" data-tooltip="👥 Meet the team behind the project\n🌍 Working towards a sustainable future">About us</a> -->
+      </nav>
+      
+    
    </header>
     <div class="background"></div>
     <div class="container">
@@ -52,17 +54,17 @@
                     <h2>Sign Up</h2>
                     <div class="input-box">
                         <span class="icon"><i class='bx bxs-user'></i></span>
-                        <input type="text" required>
+                        <input type="text" name="full-name" required>
                         <label>Full Name</label>
                     </div>
                     <div class="input-box">
                         <span class="icon"><i class='bx bxs-envelope'></i></span>
-                        <input type="email" required>
+                        <input type="email" name="email" required>
                         <label>Email</label>
                     </div>
                     <div class="input-box">
                         <span class="icon"><i class='bx bxs-lock-alt'></i></span>
-                        <input type="password" required>
+                        <input type="password" name="password" required>
                         <label>Password</label>
                     </div>
                     <button class="btn sign-up-btn">Sign Up</button>
@@ -79,6 +81,11 @@
                         <span class="icon"><i class='bx bxs-envelope'></i></span>
                         <input type="email" required>
                         <label>Email</label>
+                    </div>
+                    <div class="input-box">
+                        <span class="icon"><i class='bx bxs-lock-alt'></i></span>
+                        <input type="password" required placeholder="Enter New Password">
+                        <label>New Password</label>
                     </div>
                     <button class="btn send-reset-link">Send Reset Link</button>
                     <p><a href="#" class="back-to-login">Back to Login</a></p>
@@ -101,6 +108,7 @@
             </div>
         </div>
     </div>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <script src="index.js"></script>
 </body>
-</html>
+</html> 

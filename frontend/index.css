@@ -136,3 +136,43 @@ body {
   .extra-options a:hover {
     text-decoration: underline;
   }
+  .navbar a {
+    position: relative;
+    color: #fff;
+    text-decoration: none;
+    padding: 10px 20px;
+    display: inline-block;
+    transition: all 0.3s ease;
+  }
+  
+  .navbar a:hover {
+    background: #058751;
+    border-radius: 5px;
+    box-shadow: 0 0 10px #08cc7b;
+    transform: translateY(-2px);
+  }
+  
+  .navbar a::after {
+    content: attr(data-tooltip);
+    white-space: pre-line; /* supports line breaks */
+    position: absolute;
+    bottom: -55px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(8, 204, 123, 0.9);
+    color: white;
+    padding: 8px 12px;
+    border-radius: 5px;
+    font-size: 12px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease, bottom 0.3s ease;
+    min-width: max-content;
+    text-align: center;
+  }
+  
+  .navbar a:hover::after {
+    opacity: 1;
+    bottom: -65px;
+  }
+  
