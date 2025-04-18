@@ -22,13 +22,6 @@ app.use(cors({
     exposedHeaders: ['set-cookie']
 }));
 
-// app.use((req, res, next) => {
-//     res.header('Access-Control-Allow-Credentials', 'true');
-//     res.header('Access-Control-Allow-Origin', 'http://127.0.0.1:5500');
-//     res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
-//     next();
-// });
-// Import the connection function
 const { connectToDatabase } = require('./database');  // Import the function correctly
 
 // Call the connectToDatabase function

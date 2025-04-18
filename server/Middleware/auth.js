@@ -26,8 +26,6 @@ const isAuthenticated = (req, res, next) => {
     });
 }
   
-    
-    
 
     if (!token) {
         console.log("Access denied. No token provided.")

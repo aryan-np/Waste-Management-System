@@ -12,10 +12,10 @@ const vehicleRoutes = require('../Model/vehicle')
 const sendMail = async (to, subject, text) => {
     try {
         const transporter = nodemailer.createTransport({
-            service: 'gmail',  // You can change this to another email service
+            service: 'gmail',  
             auth: {
-                user: process.env.EMAIL_USER,  // Your email
-                pass: process.env.EMAIL_PASS   // Your app password
+                user: process.env.EMAIL_USER,  
+                pass: process.env.EMAIL_PASS   
             }
         });
 
@@ -29,7 +29,7 @@ const sendMail = async (to, subject, text) => {
         const info = await transporter.sendMail(mailOptions);
         console.log('Email sent: ' + info.response); // Log the success response
     } catch (err) {
-        console.error('Error sending email: ', err); // Log error if any
+        console.error('Error sending email: ', err); // Log error 
     }
 };
 
@@ -73,7 +73,6 @@ const handleForgotPassword = async (req, res) => {
     console.log("Existing user check:", existingUser); // Debug existing user
 
     const verification = await validateEmail(email);
-    console.log("HERE")
 
     try {
         // Invalidate all previous OTPs for the given email
