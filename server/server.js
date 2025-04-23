@@ -1,6 +1,7 @@
 const express = require('express');
 const userRoutes = require('./Routes/User');
 const vehicleRoute = require('./Routes/vehicle')
+const adminRoute=require("./Routes/admin")
 const cors = require('cors');
 require('dotenv').config();
 const cookieParser = require("cookie-parser");
@@ -22,6 +23,13 @@ app.use(cors({
     exposedHeaders: ['set-cookie']
 }));
 
+// app.use((req, res, next) => {
+//     res.header('Access-Control-Allow-Credentials', 'true');
+//     res.header('Access-Control-Allow-Origin', 'http://127.0.0.1:5500');
+//     res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
+//     next();
+// });
+// Import the connection function
 const { connectToDatabase } = require('./database');  // Import the function correctly
 
 // Call the connectToDatabase function
@@ -30,6 +38,7 @@ connectToDatabase();
 app.use(express.json());
 app.use('/api/user/', userRoutes);
 app.use('/api/routes/',vehicleRoute);
+app.use('/api/admin/',adminRoute)
 
 
 const paymentRoutes = require('./Routes/paymentRoutes');

@@ -36,6 +36,9 @@ const handleLogin = async (req, res) => {
             return res.status(400).json({ message: "Invalid credentials" });
         }
 
+        const role = existingUser.role
+
+        if (role==="user"){
         // Generate JWT Token
         const token = jwt.sign(
             { userId: existingUser._id, email: existingUser.email }, // Payload
@@ -44,16 +47,34 @@ const handleLogin = async (req, res) => {
         );
         
         res.setHeader("Authorization",`Bearer ${token}`);
+        res.cookie("Authorization", token, {
+        httpOnly: true,
+        strict:false,
+        // domain: '127.0.0.1'
+        path: '/', // This makes the cookie available to all paths
+        maxAge: 3600000 // 1 hour
+});
+}else{
+
+    const token = jwt.sign(
+            { userId: existingUser._id, email: existingUser.email,role:"admin" }, // Payload
+            JWT_SECRET, // Secret key
+            { expiresIn: "1h" } // Token expires in 1 hour
+        );
+        
+        res.setHeader("Authorization",`Bearer ${token}`);
        res.cookie("Authorization", token, {
     httpOnly: true,
     strict:false,
-    domain: '127.0.0.1', 
-    path: '/', 
+    // domain: '127.0.0.1', // Or '127.0.0.1' if that's what you're using
+    path: '/', // This makes the cookie available to all paths
     maxAge: 3600000 // 1 hour
 });
-        
+console.log("Logged in as Admin");
+
+}
         console.log("Login successful, token generated");
-        res.status(200).json({ message: "Login successful",token });
+        res.status(200).json({ message: "Login successful"});
         // res.redirect("localhost:5500/dashboard.html")
         
 

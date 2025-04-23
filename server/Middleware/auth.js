@@ -11,6 +11,8 @@ const isAuthenticated = (req, res, next) => {
   
   const token = req.cookies.Authorization || 
                 req.headers.authorization?.replace('Bearer ', '');
+  console.log(token);
+  
 
   if (!token) {
     console.error('No token found in:', {
@@ -26,6 +28,8 @@ const isAuthenticated = (req, res, next) => {
     });
 }
   
+    
+    
 
     if (!token) {
         console.log("Access denied. No token provided.")
@@ -33,7 +37,10 @@ const isAuthenticated = (req, res, next) => {
     }
 
     try {
+      console.log("token:");
         const decoded = jwt.verify(token, JWT_SECRET);
+        console.log(decoded);
+        
         req.user = decoded;
         console.log("AUthenticated") // Attach user data to request
         next(); // Proceed to the next middleware/controller
