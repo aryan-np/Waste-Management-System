@@ -1,29 +1,37 @@
 const express = require("express");
 const {
   validateAdminLogin,
+  handleAddUser,
   handleModifyUser,
-  handleModifyRoute,
+  handleDeleteUser,
   getAllUsers,
+  searchUser,
+  handleAddRoute,
+  handleModifyRoute,
+  handleDeleteRoute,
   getAllRoutes,
-  searchUser
+  searchRoute
 } = require("../Controller/admin.js");
 
 const { isAuthenticated } = require("../Middleware/auth.js");
 
 const router = express.Router();
 
-// Admin Authentication
+// -------------------- Admin Authentication --------------------
 router.get("/validateAdmin", isAuthenticated, validateAdminLogin);
 
-// Modify user or route
+// -------------------- User Routes --------------------
+router.post("/addUser", isAuthenticated, handleAddUser);
 router.post("/modifyUser", isAuthenticated, handleModifyUser);
-router.post("/modifyRoute", isAuthenticated, handleModifyRoute);
-
-// Get all users or routes
+router.delete("/deleteUser", isAuthenticated, handleDeleteUser);
 router.get("/getAllUsers", isAuthenticated, getAllUsers);
-router.get("/getAllRoutes", isAuthenticated, getAllRoutes);
+router.post("/searchUser", isAuthenticated, searchUser);
 
-// Search user by name
-router.get("/searchUser", isAuthenticated, searchUser);
+// -------------------- Route Management --------------------
+router.post("/addRoute", isAuthenticated, handleAddRoute);
+router.post("/modifyRoute", isAuthenticated, handleModifyRoute);
+router.delete("/deleteRoute", isAuthenticated, handleDeleteRoute);
+router.get("/getAllRoutes", isAuthenticated, getAllRoutes);
+router.post("/searchRoute", isAuthenticated, searchRoute);
 
 module.exports = router;

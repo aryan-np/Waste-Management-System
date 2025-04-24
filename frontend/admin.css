@@ -1,0 +1,347 @@
+/* admin.css */
+.dashboard-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    z-index: 1000;
+    background: #f5f5f5;
+}
+
+.sidebar {
+    width: 250px;
+    background: #08CC7B;
+    color: white;
+    height: 100vh;
+    padding: 20px 0;
+    box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+}
+
+.sidebar-header {
+    padding: 0 20px 20px;
+    display: flex;
+    align-items: center;
+    font-size: 18px;
+    font-weight: bold;
+    border-bottom: 1px solid rgba(255,255,255,0.2);
+}
+
+.sidebar-header i {
+    font-size: 24px;
+    margin-right: 10px;
+}
+
+.sidebar-menu {
+    list-style: none;
+    padding: 0;
+    margin: 20px 0;
+}
+
+.sidebar-menu li {
+    padding: 12px 20px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    transition: all 0.3s;
+}
+
+.sidebar-menu li:hover {
+    background: rgba(255,255,255,0.1);
+}
+
+.sidebar-menu li.active {
+    background: rgba(255,255,255,0.2);
+    border-left: 4px solid white;
+}
+
+.sidebar-menu li i {
+    margin-right: 10px;
+    font-size: 20px;
+}
+
+.main-content {
+    flex: 1;
+    overflow-y: auto;
+}
+
+.top-bar {
+    background: white;
+    padding: 15px 20px;
+    display: flex;
+    justify-content: flex-end;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+/* Profile Dropdown Styles */
+.profile-dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.profile-trigger {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    padding: 5px 10px;
+    border-radius: 4px;
+    transition: background-color 0.3s;
+}
+
+.profile-trigger:hover {
+    background-color: rgba(0, 0, 0, 0.05);
+}
+
+.profile-img {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    margin-right: 10px;
+}
+
+.profile-name {
+    margin-right: 10px;
+    font-weight: 500;
+}
+
+.profile-trigger i {
+    margin-left: 5px;
+    font-size: 16px;
+    transition: transform 0.3s;
+}
+
+.profile-dropdown.active .profile-trigger i {
+    transform: rotate(180deg);
+}
+
+.dropdown-content {
+    display: none;
+    position: absolute;
+    right: 0;
+    top: 100%;
+    background-color: white;
+    min-width: 250px;
+    box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+    border-radius: 5px;
+    z-index: 1;
+    padding: 10px 0;
+    margin-top: 5px;
+}
+
+.profile-dropdown.active .dropdown-content {
+    display: block;
+}
+
+.dropdown-item {
+    padding: 10px 15px;
+    font-size: 14px;
+    color: #333;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.dropdown-item:hover {
+    background-color: #f5f5f5;
+}
+
+.dropdown-item i {
+    margin-right: 8px;
+    font-size: 16px;
+}
+
+.dropdown-divider {
+    height: 1px;
+    background-color: #eee;
+    margin: 5px 0;
+}
+
+.content-section {
+    padding: 20px;
+    background: white;
+    margin: 20px;
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+/* Table Styles */
+.table-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.table-header button {
+    padding: 10px 15px;
+    background: #08CC7B;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: background 0.3s;
+}
+
+.table-header button:hover {
+    background: #06b469;
+}
+
+.table-header input {
+    padding: 10px 15px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    width: 250px;
+}
+
+.user-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+}
+
+.user-table th, .user-table td {
+    padding: 12px 15px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+}
+
+.user-table th {
+    background-color: #f8f8f8;
+    font-weight: 600;
+    color: #333;
+}
+
+.user-table tr:hover {
+    background-color: #f5f5f5;
+}
+
+.user-table i {
+    font-size: 18px;
+    margin: 0 5px;
+    cursor: pointer;
+    transition: color 0.3s;
+}
+
+.user-table .bx-edit {
+    color: #08CC7B;
+}
+
+.user-table .bx-edit:hover {
+    color: #06b469;
+}
+
+.user-table .bx-trash {
+    color: #ff4d4d;
+}
+
+.user-table .bx-trash:hover {
+    color: #cc0000;
+}
+
+/* Form Styles */
+.form-section {
+    background: #f9f9f9;
+    padding: 20px;
+    border-radius: 5px;
+    margin-top: 20px;
+    border: 1px solid #eee;
+}
+
+.form-section h3 {
+    margin-top: 0;
+    margin-bottom: 20px;
+    color: #08CC7B;
+}
+
+.form-section input {
+    display: block;
+    width: 100%;
+    padding: 10px 15px;
+    margin-bottom: 15px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 16px;
+}
+
+.form-section input:focus {
+    border-color: #08CC7B;
+    outline: none;
+}
+
+.update-btn,
+.delete-btn {
+    padding: 10px 15px;
+    min-width: 100px;
+    background: #08CC7B;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: background 0.3s;
+    margin-left: 10px; /* spacing between buttons */
+}
+
+.update-btn {
+    background: #08CC7B;
+}
+
+.update-btn:hover {
+    background: #06b469;
+}
+
+.delete-btn {
+    background: #cc080894;
+}
+
+.delete-btn:hover {
+    background: #890707;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .sidebar {
+        width: 200px;
+    }
+    
+    .table-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .table-header input {
+        width: 100%;
+        margin-top: 10px;
+    }
+    
+    .user-table {
+        display: block;
+        overflow-x: auto;
+    }
+}
+.search-wrapper {
+    position: relative;
+    display: inline-block;
+}
+
+.search-wrapper input {
+    padding-right: 30px; /* space for the icon */
+}
+
+.search-icon {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #555;
+    cursor: pointer;
+}
+.form-section {
+    background: white;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    width: 400px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+}

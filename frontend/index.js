@@ -102,6 +102,7 @@ document.addEventListener("DOMContentLoaded", () => {
         };
     
         try {
+            // 1. User login
             const response = await axios.post(`${BASE_URL}/api/user/login`, body, {
                 withCredentials: true
             });
@@ -109,28 +110,50 @@ document.addEventListener("DOMContentLoaded", () => {
             console.log("Login successful:", response.data);
             showPopup("✅ Login successful! Redirecting to Dashboard...", 1000);
     
+            // 2. Fetch user profile
             const profileRes = await fetch(`${BASE_URL}/api/user/profile`, {
                 credentials: 'include'
             });
     
             if (!profileRes.ok) throw new Error('Could not fetch profile');
+    
             const profile = await profileRes.json();
             const userRoute = profile["user Route"];
     
-            if (!userRoute) {
-                // redirect with firstTime flag
-                setTimeout(() => {
-                    window.location.href = "dashboard.html?firstTime=true";
-                }, 1000);
+            // 3. Check if admin (optional, non-fatal)
+            let isAdmin = false;
+            let adminData = null;
+            try {
+                const responseAdmin = await axios.get(`${BASE_URL}/api/admin/validateAdmin`, {
+                    withCredentials: true
+                });
+                if (responseAdmin.status === 200) {
+                    isAdmin = true;
+                    adminData = responseAdmin.data;
+                }
+            } catch (adminError) {
+                // Ignore admin validation failure
+                console.warn("Admin validation failed:", adminError.response?.data || adminError.message);
+            }
+    
+            // 4. Redirect based on role
+            if (isAdmin && adminData) {
+                window.location.href = `admin.html?totalUsers=${adminData.totalUsers}&totalRoutes=${adminData.totalRoutes}`;
             } else {
-                setTimeout(() => {
-                    window.location.href = "dashboard.html";
-                }, 1000);
+                if (!userRoute) {
+                    setTimeout(() => {
+                        window.location.href = "dashboard.html?firstTime=true";
+                    }, 1000);
+                } else {
+                    setTimeout(() => {
+                        window.location.href = "dashboard.html";
+                    }, 1000);
+                }
             }
     
         } catch (error) {
-            console.error("Login failed:", error.response || error);
-            alert("Login failed. Please check your credentials.");
+            console.error("Login failed:", error.response?.data || error.message);
+            // Optionally show an alert or popup here
         }
     });
     

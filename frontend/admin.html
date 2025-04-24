@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin Dashboard - Waste Management System</title>
+    <link rel="stylesheet" href="admin.css">
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+</head>
+<body>
+    <div class="dashboard-container">
+        <div class="sidebar">
+            <div class="sidebar-header"><i class='bx bxs-trash'></i> Waste Management</div>
+            <ul class="sidebar-menu">
+                <li id="sidebar-dashboard" class="active"><i class='bx bxs-dashboard'></i> Dashboard</li>
+                <li id="sidebar-manage-user"><i class='bx bx-user'></i> Manage Users</li>
+                <li id="sidebar-manage-route"><i class='bx bx-map'></i> Manage Routes</li>
+                <li id="sidebar-logout"><i class='bx bx-log-out'></i> Logout</li>
+            </ul>
+        </div>
+        <div class="main-content">
+            <div class="top-bar">
+                <div class="profile-dropdown">
+                    <div class="profile-trigger">
+                        <img src="User.png" alt="Admin Profile" class="profile-img">
+                        <div class="profile-name" id="greet">Welcome, Admin</div>
+                        <i class='bx bx-chevron-down'></i>
+                    </div>
+                    <div class="dropdown-content">
+                        <div class="dropdown-item"><strong>Username:</strong> <span>Admin</span></div>
+                        <div class="dropdown-item"><strong>Role:</strong> <span>Administrator</span></div>
+                        <div class="dropdown-divider"></div>
+                        <div class="dropdown-item"><i class='bx bx-key'></i> Change Password</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="content-section" id="dashboard-section">
+                <h2>Admin Dashboard Overview</h2>
+                <p>Monitor and manage the system resources here.</p>
+                
+                <div class="stats-container">
+                    <div class="stat-card">
+                        <h3>Total Users</h3>
+                        <p class="stat-value" id="totalUser">125</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Active Routes</h3>
+                        <p class="stat-value" id="totalRoute">8</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Pending Payments</h3>
+                        <p class="stat-value">Rs. 12,500</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="content-section" id="manage-user-section" style="display: none;">
+                <div class="table-header">
+                    <button id="add-user-btn">Add User</button>
+                    <div class="search-wrapper">
+                        <input type="text" placeholder="Search for name" id="user-search">
+                        <button id="user-search-icon"><i class='bx bx-search search-icon' id="user-search-icon"></i></button>
+                    </div>
+                </div>
+                <table class="user-table">
+                    <thead>
+                        <tr>
+                            <th><a>ID</a></th>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Due Amount</th>
+                            <th>Route</th>
+                            <th>Role</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>67eb738c59de...</td>
+                            <td>modified name 3</td>
+                            <td>modified email3</td>
+                            <td> Rs. 0</td>
+                            <td>Route 1</td>
+                            <td>user</td>
+                            <td>
+                                <i class='bx bx-edit edit-icon'></i> 
+                                <i class='bx bx-trash trash-icon'></i>
+                            </td>
+                        </tr>
+                        <!-- More user rows will be added dynamically -->
+                    </tbody>
+                </table>
+
+                <div class="form-section" id="user-form-section" style="display:none;">
+                    <h3>Add/Update User</h3>
+                    <input type="text" placeholder="Name" id="user-name">
+                    <input type="email" placeholder="Email" id="user-email">
+                    <input type="password" placeholder="Password" id="user-password">
+                    <input type="number" placeholder="Due Amount" id="user-due">
+                    <button id="userDeleteButton" class="delete-btn">Close</button>
+                    <button id="userUpdateButton" class="update-btn">Update</button>
+                </div>
+            </div>
+
+            <div class="content-section" id="manage-route-section" style="display: none;">
+                <div class="table-header">
+                    <button id="add-route-btn">Add Route</button>
+                    <div class="search-wrapper">
+                        <input type="text" id="route-search" placeholder="Search route...">
+                        <button id="route-search-icon"><i class='bx bx-search'></i></button>
+                    </div>
+                </div>
+                <table class="user-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Route Name</th>
+                            <th>Locations</th>
+                            <th>Schedule</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>67e2a607467b...</td>
+                            <td>Route 1</td>
+                            <td>Baneshwor, Koteshwor, Boudha</td>
+                            <td>
+                                <div>Tuesday: 11:23 AM - 09:00 PM</div>
+                                <div>Thursday: 01:47 PM - 03:30 PM</div>
+                            </td>
+                            <td>
+                                <i class='bx bx-edit edit-icon'></i> 
+                                <i class='bx bx-trash trash-icon'></i>
+                            </td>
+                        </tr>
+                        <!-- More route rows will be added dynamically -->
+                    </tbody>
+                </table>
+
+                <div class="form-section" id="route-form-section" style="display:none;">
+                    <h3>Add/Update Route</h3>
+                    <input type="text" placeholder="Route Name" id="route-name">
+                    <textarea placeholder="Locations (comma-separated)" id="route-locations"></textarea>
+                    <div class="schedule-input">
+                        <h4>Schedule 1</h4>
+                        <input type="text" placeholder="Day (e.g. Monday)" id="route-day1">
+                        <input type="text" placeholder="Time (e.g. 9:00 AM - 5:00 PM)" id="route-time1">
+                    </div>
+                    <div class="schedule-input">
+                        <h4>Schedule 2</h4>
+                        <input type="text" placeholder="Day (e.g. Wednesday)" id="route-day2">
+                        <input type="text" placeholder="Time (e.g. 1:00 PM - 7:00 PM)" id="route-time2">
+                    </div>
+                    <button id="routeDeleteButton" class="delete-btn">Close</button>
+                    <button id="routeUpdateButton" class="update-btn">Update</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="admin.js"></script>
+</body>
+</html>
