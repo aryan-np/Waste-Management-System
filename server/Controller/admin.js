@@ -96,11 +96,40 @@ const searchUser = async (req, res) => {
   }
 };
 
+// Search Route Handler
+const searchRoute = async (req, res) => {
+  try {
+    const { location } = req.query; // Get the location query parameter
+
+    // Check if location query parameter is provided
+    if (!location) {
+      return res.status(400).send('Location query parameter is required');
+    }
+
+    // Search for routes where any location matches the query location (case-insensitive)
+    const routes = await VehicleRoute.find({
+      locations: { $regex: location, $options: 'i' } // Using regex for case-insensitive matching
+    });
+
+    // If no routes found
+    if (routes.length === 0) {
+      return res.status(404).send('No routes found for the given location');
+    }
+
+    // Return the found routes
+    res.status(200).json(routes);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('Server error');
+  }
+};
+
 module.exports = {
   validateAdminLogin,
   handleModifyUser,
   handleModifyRoute,
   getAllUsers,
   getAllRoutes,
-  searchUser
+  searchUser,
+  searchRoute
 };
