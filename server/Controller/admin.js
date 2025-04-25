@@ -41,7 +41,10 @@ const handleAddUser = async (req, res) => {
 const handleModifyUser = async (req, res) => {
   try {
     const { userId, name, email, dueAmount } = req.body;
-
+    console.log(userId);
+    console.log(name);
+    
+    
     const user = await User.findById(userId);
     if (!user) return res.status(404).send('User not found');
 

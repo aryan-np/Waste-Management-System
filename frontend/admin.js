@@ -28,6 +28,9 @@ document.addEventListener('DOMContentLoaded', function () {
     const totalUsersCard = document.getElementById('totalUser');
     const totalRoutesCard = document.getElementById('totalRoute');
 
+    let globalUserId;
+    let globalRouteId;
+
     // Event listener for sidebar navigation
     dashboardBtn.addEventListener('click', function () {
         navigateToSection(dashboardSection);
@@ -165,7 +168,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     // Function to load user data (backend integration required)
-    // Function to load user data from the backend and populate the table
+ // Function to load user data from the backend and populate the table
 async function loadUserData(users) {
     try {
         // Get the tbody element of the user table
@@ -188,13 +191,64 @@ async function loadUserData(users) {
                 <td>${user.selectedRoute ? user.selectedRoute.name : 'N/A'}</td>
                 <td>${user.role}</td>
                 <td>
-                    <i class='bx bx-edit' id="edit-icon-${user._id}"></i>
-                    <i class='bx bx-trash' id="trash-icon-${user._id}"></i>
+                    <i class='bx bx-edit' data-user-id="${user._id}"></i>
+                    <i class='bx bx-trash' data-user-id="${user._id}"></i>
                 </td>
             `;
             
             // Append the row to the table body
             tbody.appendChild(row);
+        });
+
+        // Add event listeners to all edit icons
+        document.querySelectorAll('.bx-edit').forEach(icon => {
+            icon.addEventListener('click', (e) => {
+                const row = e.target.closest('tr');
+                globalUserId = e.target.getAttribute('data-user-id');
+                
+                const data = {
+                    name: row.cells[1].textContent,
+                    email: row.cells[2].textContent,
+                    due: parseFloat(row.cells[3].textContent.replace('Rs. ', '')),
+                    role: row.cells[5].textContent,
+                    selectedRoute: row.cells[4].textContent
+                };
+                
+                console.log('Edit user clicked with data:', data);
+                showUserForm("edit", data);
+            });
+        });
+
+        // Add event listeners to all trash icons
+        document.querySelectorAll('.bx-trash').forEach(icon => {
+            icon.addEventListener('click', async (e) => {
+                const userId = e.target.getAttribute('data-user-id');
+                console.log('Delete user clicked for ID:', userId);
+                
+                if (confirm(`Are you sure you want to delete user ${userId}?`)) {
+                    try {
+                        const response = await fetch(`${API_BASE}/deleteUser`, {
+                            method: 'POST',
+                            credentials: 'include',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({ userId: userId })
+                        });
+                        
+                        if (!response.ok) {
+                            throw new Error('Failed to delete user');
+                        }
+                        
+                        alert('User deleted successfully');
+                        // Refresh the user list
+                        manageUserBtn.click();
+                    } catch (error) {
+                        console.error("Error deleting user:", error);
+                        alert('Failed to delete user');
+                    }
+                }
+            });
         });
 
         console.log('Users loaded successfully');
@@ -203,56 +257,111 @@ async function loadUserData(users) {
     }
 }
 
+// Function to load route data from the backend and populate the table
+async function loadRouteData(routes) {
+    try {
+        // Get the tbody element of the route table
+        const tbody = document.querySelector('#manage-route-section .user-table tbody');
 
-    // Function to load route data (backend integration required)
-    async function loadRouteData(routes) {
-        try {
-            console.log('Loading route data...');
-    
-            
-    
-            // Get the tbody element of the route table inside the manage-route-section
-            const tbody = document.querySelector('#manage-route-section .user-table tbody');
-    
-            // Check if tbody is found
-            if (!tbody) {
-                console.error('Table body element not found!');
-                return;
-            }
-    
-            // Clear existing rows
-            tbody.innerHTML = '';
-    
-            // Loop through each route and create table rows
-            routes.forEach(route => {
-                // Format the schedule as HTML
-                const schedule = route.schedule.map(sch => {
-                    return `<div>${sch.day}: ${sch.time}</div>`;
-                }).join('');
-    
-                // Create a new table row
-                const row = document.createElement('tr');
-                row.innerHTML = `
-                    <td>${route._id}</td>
-                    <td>${route.routeName}</td>
-                    <td>${route.locations.join(', ')}</td>
-                    <td>${schedule}</td>
-                    <td>
-                        <i class='bx bx-edit' id="edit-icon-${route._id}"></i>
-                        <i class='bx bx-trash' id="trash-icon-${route._id}"></i>
-                    </td>
-                `;
-    
-                // Append the row to the table body
-                tbody.appendChild(row);
-            });
-    
-            console.log('Routes loaded successfully');
-        } catch (error) {
-            console.error('Error loading route data:', error);
+        // Check if tbody is found
+        if (!tbody) {
+            console.error('Table body element not found!');
+            return;
         }
+
+        // Clear existing rows
+        tbody.innerHTML = '';
+
+        // Loop through each route and create table rows
+        routes.forEach(route => {
+            // Format the schedule as HTML
+            const schedule = route.schedule.map(sch => {
+                return `<div>${sch.day}: ${sch.time}</div>`;
+            }).join('');
+
+            // Create a new table row
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${route._id}</td>
+                <td>${route.routeName}</td>
+                <td>${route.locations.join(', ')}</td>
+                <td>${schedule}</td>
+                <td>
+                    <i class='bx bx-edit' data-route-id="${route._id}"></i>
+                    <i class='bx bx-trash' data-route-id="${route._id}"></i>
+                </td>
+            `;
+
+            // Append the row to the table body
+            tbody.appendChild(row);
+        });
+
+        // Add event listeners to all edit icons
+        document.querySelectorAll('#manage-route-section .bx-edit').forEach(icon => {
+            icon.addEventListener('click', (e) => {
+                const row = e.target.closest('tr');
+                globalRouteId = e.target.getAttribute('data-route-id');
+                
+                // Extract schedule data
+                const scheduleDivs = row.cells[3].querySelectorAll('div');
+                const schedule = [];
+                if (scheduleDivs.length > 0) {
+                    const [day1, time1] = scheduleDivs[0].textContent.split(': ');
+                    schedule.push({ day: day1, time: time1 });
+                }
+                if (scheduleDivs.length > 1) {
+                    const [day2, time2] = scheduleDivs[1].textContent.split(': ');
+                    schedule.push({ day: day2, time: time2 });
+                }
+                
+                const data = {
+                    routeName: row.cells[1].textContent,
+                    locations: row.cells[2].textContent.split(', '),
+                    schedule: schedule
+                };
+                
+                console.log('Edit route clicked with data:', data);
+                showRouteForm("edit", data);
+            });
+        });
+
+        // Add event listeners to all trash icons
+        document.querySelectorAll('#manage-route-section .bx-trash').forEach(icon => {
+            icon.addEventListener('click', async (e) => {
+                const routeId = e.target.getAttribute('data-route-id');
+                console.log('Delete route clicked for ID:', routeId);
+                
+                if (confirm(`Are you sure you want to delete route ${routeId}?`)) {
+                    try {
+                        const response = await fetch(`${API_BASE}/deleteRoute`, {
+                            method: 'POST',
+                            credentials: 'include',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({ routeId: routeId })
+                        });
+                        
+                        if (!response.ok) {
+                            throw new Error('Failed to delete route');
+                        }
+                        
+                        alert('Route deleted successfully');
+                        // Refresh the route list
+                        manageRouteBtn.click();
+                    } catch (error) {
+                        console.error("Error deleting route:", error);
+                        alert('Failed to delete route');
+                    }
+                }
+            });
+        });
+
+        console.log('Routes loaded successfully');
+    } catch (error) {
+        console.error('Error loading route data:', error);
     }
-  
+}
 
     
     
@@ -260,8 +369,7 @@ async function loadUserData(users) {
 
 
 
-let globalUserId;
-let globalRouteId;
+
 
 const userUpdateButton = document.getElementById('userUpdateButton');
 const routeUpdateButton = document.getElementById('routeUpdateButton');
@@ -270,6 +378,7 @@ const routeDeleteButton = document.getElementById('routeDeleteButton');
 
 // Show user form
 addUserBtn.addEventListener('click', function () {
+    // alert("CREATE FORM SHOWING>>>>>>")
     showUserForm('create');
 });
 
@@ -286,10 +395,14 @@ function showUserForm(mode, data = null) {
     userFormSection.style.top = '50%';
     userFormSection.style.transform = 'translate(-50%, -50%)';
     userFormSection.style.zIndex = 1000;
-
+    // console.log("DUE"+data.due);
+    console.log("MODE"+mode);
+    
     document.getElementById("user-name").value = data?.name || '';
     document.getElementById("user-email").value = data?.email || '';
     document.getElementById("user-password").value = '';
+    
+    
     document.getElementById("user-due").value = data?.due || '';
 
     document.getElementById("userUpdateButton").dataset.mode = mode;
@@ -327,8 +440,11 @@ routeDeleteButton.addEventListener('click', () => {
 // Update User
 userUpdateButton.addEventListener('click', async () => {
     const mode = userUpdateButton.dataset.mode;
+    alert("CURRENT MODE :"+mode);
+    
 
     const user = {
+        userId:globalUserId,
         name: document.getElementById("user-name").value,
         email: document.getElementById("user-email").value,
         password: document.getElementById("user-password").value,
@@ -361,7 +477,8 @@ userUpdateButton.addEventListener('click', async () => {
     } else {
         console.log("Updating user:", user);
         try {
-            user.userID = globalUserId;
+            
+            
             const response = await fetch(`${API_BASE}/modifyUser`, {
                 method: 'POST',
                 credentials: 'include', // Send cookies and credentials
@@ -375,7 +492,7 @@ userUpdateButton.addEventListener('click', async () => {
                 throw new Error('Failed to fetch users');
             }
             if (response.ok) {
-                alert('User added sucessfully.');
+                alert('User edited sucessfully.');
             }
         }
             catch{
@@ -392,6 +509,7 @@ routeUpdateButton.addEventListener('click', async() => {
     const mode = routeUpdateButton.dataset.mode;
 
     const route = {
+        routeId:globalRouteId,
         routeName: document.getElementById("route-name").value,
         locations: document.getElementById("route-locations").value.split(','),
         schedule: [
@@ -423,7 +541,7 @@ routeUpdateButton.addEventListener('click', async() => {
                 throw new Error('Failed to fetch users');
             }
             if (response.ok) {
-                alert('User added sucessfully.');
+                alert('Route added sucessfully.');
             }
         }
             catch{
@@ -435,6 +553,7 @@ routeUpdateButton.addEventListener('click', async() => {
         console.log("Updating route:", route);
         try {
             route.routeID = globalRouteId;
+            alert(route)
             const response = await fetch(`${API_BASE}/modifyRoute`, {
                 method: 'POST',
                 credentials: 'include', // Send cookies and credentials
@@ -448,7 +567,7 @@ routeUpdateButton.addEventListener('click', async() => {
                 throw new Error('Failed to fetch users');
             }
             if (response.ok) {
-                alert('User added sucessfully.');
+                alert('Route edited sucessfully.');
             }
         }
             catch{
@@ -462,39 +581,5 @@ routeUpdateButton.addEventListener('click', async() => {
 
 
 
-function attachUserEditListeners() {
-    // Use event delegation on the table body of the user table
-    const userTableBody = document.querySelector("#manage-user-section .user-table tbody");
-
-    userTableBody.addEventListener("click", function (e) {
-        if (e.target.classList.contains("edit-icon")) {
-            const row = e.target.closest("tr");
-            const cells = row.querySelectorAll("td");
-
-            const id = cells[0].textContent.trim();
-            const name = cells[1].textContent.trim();
-            const email = cells[2].textContent.trim();
-            const dueAmount = cells[3].textContent.trim();
-            const route = cells[4].textContent.trim();
-            const role = cells[5].textContent.trim();
-
-            console.log("Edit Clicked for User:");
-            console.log({ id, name, email, dueAmount, route, role });
-
-            // Populate form fields
-            document.getElementById("user-name").value = name;
-            document.getElementById("user-email").value = email;
-            document.getElementById("user-password").value = ""; // leave blank for security
-            document.getElementById("user-due").value = parseFloat(dueAmount.replace("Rs.", "").trim());
-
-            // Show the form section
-            document.getElementById("user-form-section").style.display = "block";
-        }
-    });
-}
-
-// Call this function when the page loads or when data is updated
-attachUserEditListeners();
-    // Initialize the page with the default view (Dashboard)
     dashboardBtn.click();
 });

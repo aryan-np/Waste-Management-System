@@ -23,14 +23,14 @@ router.get("/validateAdmin", isAuthenticated, validateAdminLogin);
 // -------------------- User Routes --------------------
 router.post("/addUser", isAuthenticated, handleAddUser);
 router.post("/modifyUser", isAuthenticated, handleModifyUser);
-router.delete("/deleteUser", isAuthenticated, handleDeleteUser);
+router.post("/deleteUser", isAuthenticated, handleDeleteUser);
 router.get("/getAllUsers", isAuthenticated, getAllUsers);
 router.post("/searchUser", isAuthenticated, searchUser);
 
 // -------------------- Route Management --------------------
 router.post("/addRoute", isAuthenticated, handleAddRoute);
 router.post("/modifyRoute", isAuthenticated, handleModifyRoute);
-router.delete("/deleteRoute", isAuthenticated, handleDeleteRoute);
+router.post("/deleteRoute", isAuthenticated, handleDeleteRoute);
 router.get("/getAllRoutes", isAuthenticated, getAllRoutes);
 router.post("/searchRoute", isAuthenticated, searchRoute);
 
