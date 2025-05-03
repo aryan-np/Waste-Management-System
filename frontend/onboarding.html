@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Waste Management - Onboarding</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Arial', sans-serif;
+        }
+        
+        body {
+            background-color: #ebffe5;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            overflow: hidden;
+        }
+        
+        .onboarding-container {
+            width: 100%;
+            max-width: 500px;
+            height: 80vh;
+            background-color: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .slides-container {
+            flex: 1;
+            display: flex;
+            transition: transform 0.5s ease;
+        }
+        
+        .slide {
+            min-width: 100%;
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+        }
+        
+        .slide img {
+            width: 100%;
+            max-height: 250px;
+            object-fit: contain;
+            margin-bottom: 30px;
+        }
+        
+        .slide h2 {
+            color: #08CC7B;
+            margin-bottom: 15px;
+            font-size: 24px;
+        }
+        
+        .slide p {
+            color: #666;
+            line-height: 1.5;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 5px;
+            background-color: #e0e0e0;
+            position: relative;
+        }
+        
+        .progress {
+            height: 100%;
+            background-color: #08CC7B;
+            width: 33.33%;
+            transition: width 0.3s ease;
+        }
+        
+        .buttons-container {
+            display: flex;
+            justify-content: space-between;
+            padding: 20px;
+        }
+        
+        .btn {
+            padding: 12px 25px;
+            border-radius: 30px;
+            font-weight: bold;
+            cursor: pointer;
+            border: none;
+            transition: all 0.3s;
+        }
+        
+        .btn-skip {
+            background-color: transparent;
+            color: #666;
+        }
+        
+        .btn-skip:hover {
+            color: #333;
+        }
+        
+        .btn-next {
+            background-color: #08CC7B;
+            color: white;
+        }
+        
+        .btn-next:hover {
+            background-color: #06b469;
+            transform: translateY(-2px);
+        }
+        
+        .dots-container {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
+        
+        .dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background-color: #ccc;
+            margin: 0 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        
+        .dot.active {
+            background-color: #08CC7B;
+        }
+    </style>
+</head>
+<body>
+    <div class="onboarding-container">
+        <div class="progress-bar">
+            <div class="progress" id="progress"></div>
+        </div>
+        
+        <div class="slides-container" id="slides">
+            <div class="slide">
+                <!-- <img src="https://www.google.com/url?sa=i&url=https%3A%2F%2Fwww.reactiondistributing.com%2Fthe-importance-of-waste-management-systems%2F&psig=AOvVaw2orkihT7KRtVrqh0GfMxrx&ust=1745826720152000&source=images&cd=vfe&opi=89978449&ved=0CBQQjRxqFwoTCMiqo8Dd94wDFQAAAAAdAAAAABAE" alt="Waste Management"> -->
+                <h2>Welcome to Waste Management System</h2>
+                <p>Efficient waste disposal and recycling for a cleaner, greener Nepal.</p>
+            </div>
+            
+            <div class="slide">
+                <img src="https://images.unsplash.com/photo-1606787366850-de6330128bfc?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80" alt="Recycling">
+                <h2>Smart Recycling</h2>
+                <p>Learn how to properly sort and recycle your waste to help protect our environment.</p>
+            </div>
+            
+            <div class="slide">
+                <img src="https://images.unsplash.com/photo-1503596476-1c12a8ba09a9?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80" alt="Schedule">
+                <h2>Collection Schedule</h2>
+                <p>Get timely notifications about waste collection schedules in your area.</p>
+            </div>
+        </div>
+        
+        <div class="dots-container" id="dots">
+            <div class="dot active"></div>
+            <div class="dot"></div>
+            <div class="dot"></div>
+        </div>
+        
+        <div class="buttons-container">
+            <button class="btn btn-skip" id="skip">Skip</button>
+            <button class="btn btn-next" id="next">Next</button>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const slides = document.getElementById('slides');
+            const dots = document.querySelectorAll('.dot');
+            const nextBtn = document.getElementById('next');
+            const skipBtn = document.getElementById('skip');
+            const progress = document.getElementById('progress');
+            
+            let currentSlide = 0;
+            const totalSlides = document.querySelectorAll('.slide').length;
+            
+            // Update UI based on current slide
+            function updateUI() {
+                slides.style.transform = `translateX(-${currentSlide * 100}%)`;
+                progress.style.width = `${(currentSlide + 1) * (100 / totalSlides)}%`;
+                
+                dots.forEach((dot, index) => {
+                    dot.classList.toggle('active', index === currentSlide);
+                });
+                
+                if (currentSlide === totalSlides - 1) {
+                    nextBtn.textContent = 'Get Started';
+                } else {
+                    nextBtn.textContent = 'Next';
+                }
+            }
+            
+            // Next button click handler
+            nextBtn.addEventListener('click', function() {
+                if (currentSlide < totalSlides - 1) {
+                    currentSlide++;
+                    updateUI();
+                } else {
+                    // Redirect to index.html when onboarding is complete
+                    window.location.href = 'index.html';
+                }
+            });
+            
+            // Skip button click handler
+            skipBtn.addEventListener('click', function() {
+                // Redirect to index.html immediately
+                window.location.href = 'index.html';
+            });
+            
+            // Dot click handlers
+            dots.forEach((dot, index) => {
+                dot.addEventListener('click', function() {
+                    currentSlide = index;
+                    updateUI();
+                });
+            });
+            
+            // Initialize UI
+            updateUI();
+        });
+    </script>
+</body>
+</html>

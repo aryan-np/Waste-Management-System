@@ -130,14 +130,14 @@ const handleSignup = async (req, res) => {
 // Step 2: Handle Signup OTP Verification & User Registration
 const handleSignupOtp = async (req, res) => {
     try {
-        const { name, email, password } = req.body;
+        const { name, email, password,number } = req.body;
 
         // Hash password
         const salt = await bcrypt.genSalt(10);
         const hashedPassword = await bcrypt.hash(password, salt);
 
         // Create new user
-        const newUser = new User({ name, email, password: hashedPassword });
+        const newUser = new User({ name, email, password: hashedPassword,number:number });
         await newUser.save();
 
         res.status(201).json({ status: true, message: "User registered successfully" });

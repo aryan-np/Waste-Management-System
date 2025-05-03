@@ -36,11 +36,14 @@ document.addEventListener("DOMContentLoaded", () => {
         const registerName = forms.register.querySelector("input[name='full-name']").value;
         const registerEmail = forms.register.querySelector("input[name='email']").value;
         const registerPassword = forms.register.querySelector("input[name='password']").value;
+        const confirmPassword = forms.register.querySelector("input[name='confirmPassword']").value;
+        const contact = forms.register.querySelector("input[name='number']").value;
 
         const body = {
             name: registerName,
             email: registerEmail,
-            password: registerPassword
+            password: registerPassword,
+            number:contact
         };
 
         try {
@@ -188,14 +191,14 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
 
-    function showPopup(message, duration) {
+    function showPopup(message, duration,color) {
         const popup = document.createElement("div");
         popup.textContent = message;
         popup.style.position = "fixed";
         popup.style.top = "20px";
         popup.style.left = "50%";
         popup.style.transform = "translateX(-50%)";
-        popup.style.background = "#4CAF50";
+        popup.style.background = color || "#4CAF50";
         popup.style.color = "white";
         popup.style.padding = "10px 20px";
         popup.style.borderRadius = "5px";

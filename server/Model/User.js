@@ -14,6 +14,10 @@ const userSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
+    number:{
+        type: String,
+        required: true,
+    },
     selectedRoute: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'VehicleRoute',

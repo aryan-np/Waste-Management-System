@@ -169,7 +169,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Function to load user data (backend integration required)
  // Function to load user data from the backend and populate the table
-async function loadUserData(users) {
+    async function loadUserData(users) {
     try {
         // Get the tbody element of the user table
         const tbody = document.querySelector('.user-table tbody');

@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>About Us | Waste Management System</title>
-  <link rel="stylesheet" href="pages.css" />
+  <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
 </head>
 <style>
     * {
@@ -21,7 +21,7 @@ body {
 }
 
 header {
-  background-color: #2e7d32;
+  background-color: #08cc7b;
   color: #fff;
   padding: 1rem 2rem;
   display: flex;
@@ -33,14 +33,46 @@ header h1 {
   font-size: 1.5rem;
 }
 
-nav a {
+.navbar a {
   color: #fff;
   margin-left: 1rem;
   text-decoration: none;
+  position: relative;
+  padding: 10px 20px;
+  display: inline-block;
+  transition: all 0.3s ease;
 }
 
-nav a:hover {
-  text-decoration: underline;
+.navbar a:hover {
+  background: #058751;
+  border-radius: 5px;
+  box-shadow: 0 0 10px #08cc7b;
+  transform: translateY(-2px);
+  text-decoration: none;
+}
+
+.navbar a::after {
+  content: attr(data-tooltip);
+  white-space: pre-line;
+  position: absolute;
+  bottom: -55px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(8, 204, 123, 0.9);
+  color: white;
+  padding: 8px 12px;
+  border-radius: 5px;
+  font-size: 12px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease, bottom 0.3s ease;
+  min-width: max-content;
+  text-align: center;
+}
+
+.navbar a:hover::after {
+  opacity: 1;
+  bottom: -65px;
 }
 
 .about-us-section {
@@ -77,23 +109,21 @@ ul {
 }
 
 footer {
-  background-color: #2e7d32;
+  background-color: #08cc7b;
   color: #fff;
   text-align: center;
   padding: 1rem;
   margin-top: 3rem;
 }
-
 </style>
 <body>
   <header>
-    <h1>Waste Management System</h1>
-    <nav>
-      <a href="#">Home</a>
-      <a href="#">Services</a>
-      <a href="#">Recycling Info</a>
-      <a href="#">Contact</a>
-      <a href="#">About Us</a>
+    <h1><i class='bx bxs-trash'></i> Waste Management System</h1>
+    <nav class="navbar">
+      <a href="mission.html" data-tooltip="♻️ Our mission is to reduce waste\n🌿 Our vision is a clean and green Nepal">Mission & Vision</a>
+      <a href="contact.html" data-tooltip="📧 Contact our support team\n📞 Call us for assistance">Contact</a>
+      <a href="recycling.html" data-tooltip="🧾 Learn how to sort and recycle\n♻️ Know what can and can't be recycled">Recycling Info</a>
+      <a href="index.html" data-tooltip="🔐 Login to your account\n📱 Access your dashboard">Login</a>
     </nav>
   </header>
 
@@ -125,7 +155,7 @@ footer {
 
     <section class="why-choose-us">
       <h3>Why Choose Waste Management?</h3>
-      <p>At Waste Management System, we are more than just a waste management service. We are your partners in building a sustainable future. Here’s why customers choose us:</p>
+      <p>At Waste Management System, we are more than just a waste management service. We are your partners in building a sustainable future. Here's why customers choose us:</p>
       <ul>
         <li>Reliable, on-time waste collection services.</li>
         <li>Comprehensive recycling programs tailored to your needs.</li>
