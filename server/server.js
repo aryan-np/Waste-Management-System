@@ -2,6 +2,7 @@ const express = require('express');
 const userRoutes = require('./Routes/User');
 const vehicleRoute = require('./Routes/vehicle')
 const adminRoute=require("./Routes/admin")
+const pickupRoute=require("./Routes/pickup")
 const cors = require('cors');
 require('dotenv').config();
 const cookieParser = require("cookie-parser");
@@ -39,6 +40,7 @@ app.use(express.json());
 app.use('/api/user/', userRoutes);
 app.use('/api/routes/',vehicleRoute);
 app.use('/api/admin/',adminRoute)
+app.use('/api/pickup/',pickupRoute)
 
 
 const paymentRoutes = require('./Routes/paymentRoutes');
