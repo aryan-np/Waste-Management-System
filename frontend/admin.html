@@ -14,6 +14,8 @@
                 <li id="sidebar-dashboard" class="active"><i class='bx bxs-dashboard'></i> Dashboard</li>
                 <li id="sidebar-manage-user"><i class='bx bx-user'></i> Manage Users</li>
                 <li id="sidebar-manage-route"><i class='bx bx-map'></i> Manage Routes</li>
+                <li id="sidebar-manage-request"><i class='bx bx-envelope'></i> Manage Requests</li>
+
                 <li id="sidebar-logout"><i class='bx bx-log-out'></i> Logout</li>
             </ul>
         </div>
@@ -34,6 +36,7 @@
                 </div>
             </div>
 
+            
             <div class="content-section" id="dashboard-section">
                 <h2>Admin Dashboard Overview</h2>
                 <p>Monitor and manage the system resources here.</p>
@@ -53,6 +56,45 @@
                     </div>
                 </div>
             </div>
+
+
+            <div class="content-section" id="manage-request-section" style="display: none;">
+                <h2>Pending Requests</h2>
+                <div class="table-header">
+                    <div class="search-wrapper">
+                        <input type="text" id="request-search" placeholder="Search by name or email">
+                        <button><i class='bx bx-search'></i></button>
+                    </div>
+                </div>
+                <table class="user-table">
+                    <thead>
+                        <tr>
+                            <th>User Name</th>
+                            <th>Email</th>
+                            <th>Request Date</th>
+                            <th>Address</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Rojan Shrestha</td>
+                            <td>rojan@example.com</td>
+                            <td>2025-05-01</td>
+                            <td>Kapan</td>
+                            <td>pending</td>
+                            <td>
+                                <i class='bx bx-check accept-icon' title="Accept"></i>
+                                <i class='bx bx-x reject-icon' title="Reject"></i>
+                            </td>
+                        </tr>
+                        <!-- More request rows will be added dynamically -->
+                    </tbody>
+                </table>
+            </div>
+
+            
 
             <div class="content-section" id="manage-user-section" style="display: none;">
                 <div class="table-header">

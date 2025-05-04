@@ -16,7 +16,7 @@
                 <li id="sidebar-dashboard" class="active"><i class='bx bxs-dashboard'></i> Dashboard</li>
                 <li id="sidebar-change-route"><i class='bx bx-map'></i> Change Route</li>
                 <!-- <li id="sidebar-profile"><i class='bx bx-user-circle'></i> Payment</li> -->
-                <li id="sidebar-settings"><i class='bx bx-cog'></i> Settings</li>
+                <li id="sidebar-settings"><i class='bx bx-cog'></i>Request Pickup</li>
                 <li id="sidebar-logout"><i class='bx bx-log-out'></i> Logout</li>
             </ul>
         </div>
@@ -103,9 +103,39 @@
 </div>
             <!-- Settings Section -->
             <div class="content-section" id="settings-section" style="display: none;">
-                <h2>Settings</h2>
-                <p>This is the Settings section. Configure your preferences here.</p>
+                <h2>Request Pickup</h2>
+                <form id="pickup-form" class="pickup-form">
+                    <div class="input-box">
+                        <label for="pickup-address">Address:</label>
+                        <input type="text" id="pickup-address" required placeholder="Enter pickup address" />
+                    </div>
+            
+                    <div class="input-box">
+                        <label for="pickup-landmark">Landmark (Optional):</label>
+                        <input type="text" id="pickup-landmark" placeholder="Enter nearby landmark (optional)" />
+                    </div>
+            
+                    <div class="input-box">
+                        <label for="pickup-date">Pickup Date:</label>
+                        <input type="date" id="pickup-date" required />
+                    </div>
+            
+                    <div class="input-box">
+                        <label for="pickup-time">Pickup Time:</label>
+                        <input type="time" id="pickup-time" required />
+                    </div>
+            
+                    <div class="input-box">
+                        <label for="pickup-message">Message:</label>
+                        <textarea id="pickup-message" rows="3" placeholder="Enter any special instructions or message"></textarea>
+                    </div>
+            
+                    <button type="submit" class="btn">Submit Request</button>
+                    <p id="pickup-status" class="status-message"></p>
+                </form>
             </div>
+            
+            
         </div>
     </div>
 

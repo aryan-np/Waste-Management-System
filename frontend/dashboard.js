@@ -299,6 +299,55 @@ function showError(message) {
         }
     }
 
+
+    const form = document.getElementById("pickup-form");
+    const addressInput = document.getElementById("pickup-address");
+    const dateInput = document.getElementById("pickup-date");
+    const statusMessage = document.getElementById("pickup-status");
+
+    form.addEventListener("submit", async function (event) {
+        event.preventDefault();
+
+        const address = addressInput.value.trim();
+        const date = dateInput.value;
+        console.log(address+date);
+        
+
+        if (!address || !date) {
+            statusMessage.textContent = "Please fill in all fields.";
+            statusMessage.style.color = "red";
+            return;
+        }
+
+        try {
+            const response = await fetch("http://127.0.0.1:8000/api/pickup/pickup-request", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                credentials: "include", // Send cookies if user is logged in
+                body: JSON.stringify({ address, date }),
+            });
+
+            const result = await response.json();
+            alert(result)
+            
+
+            if (response.ok) {
+                statusMessage.textContent = "Pickup request submitted successfully!";
+                statusMessage.style.color = "green";
+                form.reset();
+            } else {
+                statusMessage.textContent = result.message || "Failed to submit pickup request.";
+                statusMessage.style.color = "red";
+            }
+        } catch (error) {
+            // console.error("Error submitting pickup request:", error);
+            statusMessage.textContent = "Server error. Please try again later.";
+            statusMessage.style.color = "red";
+        }
+    });
+
     // const currentRouteDisplay = document.getElementById('current-route-display');
     const currentRouteDisplay1 = document.getElementById('current-route-display1');
 

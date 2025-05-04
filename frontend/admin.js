@@ -581,5 +581,222 @@ routeUpdateButton.addEventListener('click', async() => {
 
 
 
+
+// Add this to your existing admin.js file
+
+// ===== PICKUP REQUEST MANAGEMENT =====
+const manageRequestBtn = document.getElementById('sidebar-manage-request');
+const manageRequestSection = document.getElementById('manage-request-section');
+
+// Event listener for manage request button
+manageRequestBtn.addEventListener('click', async function() {
+    navigateToSection(manageRequestSection);
+    await loadPickupRequests();
+});
+
+// Function to load pickup requests
+async function loadPickupRequests() {
+    try {
+        const response = await fetch(`http://127.0.0.1:8000/api/pickup/pickup-requests`, {
+            method: 'GET',
+            credentials: 'include',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+
+        if (!response.ok) {
+            throw new Error('Failed to fetch pickup requests');
+        }
+
+        const requests = await response.json();
+        console.log('Fetched requests:', requests);
+        renderPickupRequests(requests);
+    } catch (error) {
+        console.error('Error loading pickup requests:', error);
+        alert('Failed to load pickup requests');
+    }
+}
+
+// Function to render pickup requests in the table
+function renderPickupRequests(requests) {
+    const tbody = document.querySelector('#manage-request-section tbody');
+    tbody.innerHTML = ''; // Clear existing rows
+
+    requests.forEach(request => {
+        const row = document.createElement('tr');
+        
+        // Format status with appropriate styling
+        const statusCell = formatStatusCell(request.status);
+        
+        row.innerHTML = `
+            <td>${request.user?.name || 'N/A'}</td>
+            <td>${request.user?.email || 'N/A'}</td>
+            <td>${new Date(request.createdAt).toLocaleDateString()}</td>
+            <td>${request.address || 'N/A'}</td>
+            <td>${statusCell}</td>
+            <td>
+                ${request.status === 'PENDING' ? `
+                <i class='bx bx-check accept-icon' data-request-id="${request._id}" title="Accept"></i>
+                <i class='bx bx-x reject-icon' data-request-id="${request._id}" title="Reject"></i>
+                ` : 'No actions available'}
+            </td>
+        `;
+        tbody.appendChild(row);
+    });
+
+    // Add event listeners to action buttons
+    addRequestActionListeners();
+    
+    // Add search functionality
+    addRequestSearchListener();
+}
+
+// Helper function to format status cell with appropriate styling
+function formatStatusCell(status) {
+    const statusText = status || 'PENDING';
+    let statusClass = '';
+    
+    switch(statusText.toUpperCase()) {
+        case 'ACCEPTED':
+            statusClass = 'status-accepted';
+            break;
+        case 'REJECTED':
+            statusClass = 'status-rejected';
+            break;
+        case 'PENDING':
+        default:
+            statusClass = 'status-pending';
+    }
+    
+    return `<span class="status-badge ${statusClass}">${statusText}</span>`;
+}
+
+// Add event listeners to action buttons
+function addRequestActionListeners() {
+    document.querySelectorAll('.accept-icon').forEach(icon => {
+        icon.addEventListener('click', async (e) => {
+            const requestId = e.target.getAttribute('data-request-id');
+            await updateRequestStatus(requestId, 'ACCEPTED');
+        });
+    });
+
+    document.querySelectorAll('.reject-icon').forEach(icon => {
+        icon.addEventListener('click', async (e) => {
+            const requestId = e.target.getAttribute('data-request-id');
+            await updateRequestStatus(requestId, 'REJECTED');
+        });
+    });
+}
+
+// Add search functionality for pickup requests
+function addRequestSearchListener() {
+    const searchButton = document.querySelector('#manage-request-section .search-wrapper button');
+    const searchInput = document.getElementById('request-search');
+    
+    searchButton.addEventListener('click', async () => {
+        await searchPickupRequests(searchInput.value.trim());
+    });
+    
+    searchInput.addEventListener('keypress', async (e) => {
+        if (e.key === 'Enter') {
+            await searchPickupRequests(searchInput.value.trim());
+        }
+    });
+}
+
+async function searchPickupRequests(query) {
+    try {
+        const response = await fetch(`http://127.0.0.1:8000/api/pickup/pickup-requests/search`, {
+            method: 'POST',
+            credentials: 'include',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ query })
+        });
+
+        if (!response.ok) {
+            throw new Error('Search failed');
+        }
+
+        const requests = await response.json();
+        renderPickupRequests(requests);
+    } catch (error) {
+        console.error('Search error:', error);
+        alert('Search failed');
+    }
+}
+
+// Function to update request status
+async function updateRequestStatus(requestId, status) {
+    if (!confirm(`Are you sure you want to ${status.toLowerCase()} this request?`)) {
+        return;
+    }
+
+    try {
+        const response = await fetch(`http://127.0.0.1:8000/api/pickup/pickup-request/${requestId}`, {
+            method: 'PUT',
+            credentials: 'include',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ status })
+        });
+
+        if (!response.ok) {
+            throw new Error(`Failed to ${status.toLowerCase()} request`);
+        }
+
+        const result = await response.json();
+        console.log('Update result:', result);
+        
+        alert(`Request ${status.toLowerCase()} successfully`);
+        await loadPickupRequests(); // Refresh the list
+    } catch (error) {
+        console.error(`Error ${status.toLowerCase()}ing request:`, error);
+        alert(`Failed to ${status.toLowerCase()} request`);
+    }
+}
+
+// Initialize the request management section
+document.getElementById('sidebar-manage-request').addEventListener('click', async function() {
+    document.querySelectorAll('.content-section').forEach(section => section.style.display = 'none');
+    document.getElementById('manage-request-section').style.display = 'block';
+    document.querySelectorAll('.sidebar-menu li').forEach(li => li.classList.remove('active'));
+    this.classList.add('active');
+    
+    await loadPickupRequests();
+});
+
+// Add search functionality for pickup requests
+document.querySelector('#manage-request-section .search-wrapper button').addEventListener('click', async () => {
+    const query = document.getElementById('request-search').value.trim();
+    
+    try {
+        const response = await fetch(`${API_BASE}/pickup-requests/search`, {
+            method: 'POST',
+            credentials: 'include',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ query })
+        });
+
+        if (!response.ok) {
+            throw new Error('Search failed');
+        }
+
+        const requests = await response.json();
+        renderPickupRequests(requests);
+    } catch (error) {
+        console.error('Search error:', error);
+        alert('Search failed');
+    }
+});
+
+
+
+
     dashboardBtn.click();
 });

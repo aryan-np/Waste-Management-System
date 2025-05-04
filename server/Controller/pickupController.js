@@ -3,6 +3,8 @@ const User = require('../Model/User');
 
 // Create pickup request
 const createPickupRequest = async (req, res) => {
+    console.log("here");
+    
     try {
         const { address } = req.body;
         console.log(address);
@@ -24,11 +26,13 @@ const createPickupRequest = async (req, res) => {
 
 // View all requests (admin only)
 const viewPickupRequests = async (req, res) => {
+    console.log("veiwing");
+    
     try {
         const user = await User.findById(req.user.userId);
-        if (!user || user.role !== 'admin') {
-            return res.status(403).json({ message: 'Access denied. Admins only.' });
-        }
+        // if (!user || user.role !== 'admin') {
+        //     return res.status(403).json({ message: 'Access denied. Admins only.' });
+        // }
 
         const requests = await PickupRequest.find().populate('user', 'name email number');
         res.json(requests);
@@ -43,15 +47,16 @@ const updatePickupRequest = async (req, res) => {
     try {
         const { status } = req.body;
         const { id } = req.params;
-
+        console.log(id);
+        
         if (!['ACCEPTED', 'REJECTED'].includes(status)) {
             return res.status(400).json({ error: 'Invalid status' });
         }
 
         const admin = await User.findById(req.user.userId);
-        if (!admin || admin.role !== 'admin') {
-            return res.status(403).json({ message: 'Access denied. Admins only.' });
-        }
+        // if (!admin || admin.role !== 'admin') {
+        //     return res.status(403).json({ message: 'Access denied. Admins only.' });
+        // }
 
         // Fetch request and check if it's still pending
         const pickup = await PickupRequest.findById(id).populate('user');

@@ -30,6 +30,7 @@ document.addEventListener("DOMContentLoaded", () => {
     links.forgotPassword.addEventListener("click", () => showForm("forgot-password"));
     links.backToLogin.addEventListener("click", () => showForm("login"));
 
+    // Update the register button event listener to enforce password validation
     buttons.register.addEventListener("click", async (event) => {
         event.preventDefault();
 
@@ -39,11 +40,27 @@ document.addEventListener("DOMContentLoaded", () => {
         const confirmPassword = forms.register.querySelector("input[name='confirmPassword']").value;
         const contact = forms.register.querySelector("input[name='number']").value;
 
+        // Validate password
+        const passwordValidation = validatePassword(registerPassword);
+        
+        // Check if password meets all requirements
+        if (!passwordValidation.isValid) {
+            showPopup("⚠️ Please create a stronger password", 3000, "#ff9800");
+            return;
+        }
+        
+        // Check if passwords match
+        if (registerPassword !== confirmPassword) {
+            showPopup("⚠️ Passwords do not match", 3000, "#f44336");
+            return;
+        }
+
+        // Continue with registration
         const body = {
             name: registerName,
             email: registerEmail,
             password: registerPassword,
-            number:contact
+            number: contact
         };
 
         try {
@@ -62,7 +79,7 @@ document.addEventListener("DOMContentLoaded", () => {
             }, 3000);
         } catch (error) {
             console.error("Registration failed:", error.response || error);
-            alert("Registration failed. Please try again.");
+            showPopup("❌ Registration failed. Please try again.", 3000, "#f44336");
         }
     });
 
@@ -191,7 +208,144 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
 
-    function showPopup(message, duration,color) {
+    // Password strength validation
+    const passwordInput = document.querySelector(".form-box.register input[name='password']");
+    const confirmPasswordInput = document.querySelector(".form-box.register input[name='confirmPassword']");
+    
+    // Create password strength indicator
+    const strengthIndicator = document.createElement("div");
+    strengthIndicator.className = "password-strength";
+    
+    // Create requirements feedback
+    const requirementsFeedback = document.createElement("div");
+    requirementsFeedback.className = "password-requirements-feedback";
+    
+    // Create container for strength and feedback
+    const passwordFeedbackContainer = document.createElement("div");
+    passwordFeedbackContainer.className = "password-feedback-container";
+    passwordFeedbackContainer.appendChild(strengthIndicator);
+    passwordFeedbackContainer.appendChild(requirementsFeedback);
+    
+    // Insert after password input
+    passwordInput.parentNode.insertAdjacentElement('afterend', passwordFeedbackContainer);
+    
+    // Create password match indicator
+    const matchIndicator = document.createElement("div");
+    matchIndicator.className = "password-match";
+    confirmPasswordInput.parentNode.insertAdjacentElement('afterend', matchIndicator);
+    
+    // Password validation function
+    function validatePassword(password) {
+        // Initialize validation checks
+        const minLength = password.length >= 8;
+        const hasUppercase = /[A-Z]/.test(password);
+        const hasLowercase = /[a-z]/.test(password);
+        const hasNumber = /[0-9]/.test(password);
+        const hasSpecial = /[^A-Za-z0-9]/.test(password);
+        
+        // Calculate score - start with 0
+        let score = 0;
+        
+        // Add points for each criteria met
+        if (minLength) score++;
+        if (hasUppercase) score++;
+        if (hasLowercase) score++;
+        if (hasNumber) score++;
+        if (hasSpecial) score++;
+        
+        // Update strength indicator
+        if (password.length === 0) {
+            strengthIndicator.style.display = "none";
+            requirementsFeedback.style.display = "none";
+            return {
+                isValid: false,
+                score: score
+            };
+        } else {
+            strengthIndicator.style.display = "block";
+            requirementsFeedback.style.display = "block";
+        }
+        
+        // Show strength based on score
+        let strengthText = "";
+        if (score < 3) {
+            strengthText = "Weak";
+            strengthIndicator.className = "password-strength weak";
+        } else if (score < 5) {
+            strengthText = "Medium";
+            strengthIndicator.className = "password-strength medium";
+        } else {
+            strengthText = "Strong";
+            strengthIndicator.className = "password-strength strong";
+        }
+        
+        strengthIndicator.textContent = strengthText;
+        
+        // Update requirements feedback - show only what's missing
+        let feedbackText = "";
+        
+        if (!minLength) {
+            feedbackText += "• At least 8 characters<br>";
+        }
+        if (!hasUppercase) {
+            feedbackText += "• One uppercase letter<br>";
+        }
+        if (!hasLowercase) {
+            feedbackText += "• One lowercase letter<br>";
+        }
+        if (!hasNumber) {
+            feedbackText += "• One number<br>";
+        }
+        if (!hasSpecial) {
+            feedbackText += "• One special character<br>";
+        }
+        
+        requirementsFeedback.innerHTML = feedbackText;
+        
+        // Password is valid if it meets all criteria
+        const isValid = minLength && hasUppercase && hasLowercase && hasNumber && hasSpecial;
+        
+        return {
+            isValid: isValid,
+            score: score
+        };
+    }
+    
+    // Check password match
+    function checkPasswordsMatch() {
+        const password = passwordInput.value;
+        const confirmPassword = confirmPasswordInput.value;
+        
+        if (confirmPassword) {
+            if (password !== confirmPassword) {
+                matchIndicator.textContent = "Passwords don't match";
+                matchIndicator.classList.add("mismatch");
+                return false;
+            } else {
+                matchIndicator.textContent = "Passwords match";
+                matchIndicator.classList.remove("mismatch");
+                return true;
+            }
+        } else {
+            matchIndicator.textContent = "";
+            return false;
+        }
+    }
+    
+    
+    // Event listeners for password validation
+    passwordInput.addEventListener("input", () => {
+        validatePassword(passwordInput.value);
+        if (confirmPasswordInput.value) {
+            checkPasswordsMatch();
+        }
+    });
+    
+    confirmPasswordInput.addEventListener("input", checkPasswordsMatch);
+
+
+    // Enhanced showPopup function
+    function showPopup(message, duration, color) {
         const popup = document.createElement("div");
         popup.textContent = message;
         popup.style.position = "fixed";
@@ -204,6 +358,7 @@ document.addEventListener("DOMContentLoaded", () => {
         popup.style.borderRadius = "5px";
         popup.style.zIndex = "1000";
         popup.style.fontSize = "16px";
+        popup.style.boxShadow = "0 2px 10px rgba(0,0,0,0.2)";
         document.body.appendChild(popup);
 
         setTimeout(() => {
@@ -217,4 +372,6 @@ document.addEventListener("DOMContentLoaded", () => {
         document.querySelector(".form-box.otp").style.display = formType === "otp" ? "block" : "none";
         document.querySelector(".form-box.forgot-password").style.display = formType === "forgot-password" ? "block" : "none";
     }
+
+
 });
