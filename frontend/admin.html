@@ -14,7 +14,10 @@
                 <li id="sidebar-dashboard" class="active"><i class='bx bxs-dashboard'></i> Dashboard</li>
                 <li id="sidebar-manage-user"><i class='bx bx-user'></i> Manage Users</li>
                 <li id="sidebar-manage-route"><i class='bx bx-map'></i> Manage Routes</li>
-                <li id="sidebar-manage-request"><i class='bx bx-envelope'></i> Manage Requests</li>
+                <li id="sidebar-manage-request" style="position: relative;">
+                    <i class='bx bx-envelope'></i> Manage Requests
+                    <span id="request-notification-badge" class="notification-badge" style="display: none;">0</span>
+                </li>
 
                 <li id="sidebar-logout"><i class='bx bx-log-out'></i> Logout</li>
             </ul>
@@ -57,43 +60,7 @@
                 </div>
             </div>
 
-
-            <div class="content-section" id="manage-request-section" style="display: none;">
-                <h2>Pending Requests</h2>
-                <div class="table-header">
-                    <div class="search-wrapper">
-                        <input type="text" id="request-search" placeholder="Search by name or email">
-                        <button><i class='bx bx-search'></i></button>
-                    </div>
-                </div>
-                <table class="user-table">
-                    <thead>
-                        <tr>
-                            <th>User Name</th>
-                            <th>Email</th>
-                            <th>Request Date</th>
-                            <th>Address</th>
-                            <th>Status</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>Rojan Shrestha</td>
-                            <td>rojan@example.com</td>
-                            <td>2025-05-01</td>
-                            <td>Kapan</td>
-                            <td>pending</td>
-                            <td>
-                                <i class='bx bx-check accept-icon' title="Accept"></i>
-                                <i class='bx bx-x reject-icon' title="Reject"></i>
-                            </td>
-                        </tr>
-                        <!-- More request rows will be added dynamically -->
-                    </tbody>
-                </table>
-            </div>
-
+            
             
 
             <div class="content-section" id="manage-user-section" style="display: none;">
@@ -173,7 +140,7 @@
                             </td>
                             <td>
                                 <i class='bx bx-edit edit-icon'></i>
-<i class='bx bx-trash trash-icon'></i>
+                                <i class='bx bx-trash trash-icon'></i>
                             </td>
                         </tr>
                         <!-- More route rows will be added dynamically -->
@@ -196,6 +163,60 @@
                     </div>
                     <button id="routeDeleteButton" class="delete-btn">Close</button>
                     <button id="routeUpdateButton" class="update-btn">Update</button>
+                </div>
+
+               
+            </div>
+            <div class="content-section" id="manage-request-section" style="display: none;">
+                <h2>Pending Requests</h2>
+                <div class="table-header">
+                    <div class="search-wrapper">
+                        <input type="text" id="request-search" placeholder="Search by name or email">
+                        <button><i class='bx bx-search'></i></button>
+                    </div>
+                </div>
+                <table class="user-table">
+                    <thead>
+                        <tr>
+                            <th>User Name</th>
+                            <th>Email</th>
+                            <th>Request Time</th>
+                            <th>Request Date</th>
+                            <th>Address</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Rojan Shrestha</td>
+                            <td>rojan@example.com</td>
+                            <td>2:50 AM</td>
+                            <td>2025-05-01</td>
+                            <td>Kapan</td>
+                            <td>pending</td>
+                            <td>
+                                <i class='bx bx-check accept-icon' title="Accept"></i>
+                                <i class='bx bx-x reject-icon' title="Reject"></i>
+                            </td>
+                        </tr>
+                        <!-- More request rows will be added dynamically -->
+                    </tbody>
+                </table>
+            </div>
+
+            <div id="request-detail-modal" class="dashboard-container" style="display: none;">
+                <div class="form-section" style="margin: auto; position: relative;">
+                    <span id="close-modal" style="position: absolute; top: 10px; right: 15px; font-size: 18px; cursor: pointer;">&times;</span>
+                    <h3>Pickup Request Details</h3>
+                    <p><strong>Name:</strong> <span id="detail-name"></span></p>
+                    <p><strong>Email:</strong> <span id="detail-email"></span></p>
+                    <p><strong>Address:</strong> <span id="detail-address"></span></p>
+                    <p><strong>Landmark:</strong> <span id="detail-landmark"></span></p>
+                    <p><strong>Date:</strong> <span id="detail-date"></span></p>
+                    <p><strong>Time:</strong> <span id="detail-time"></span></p>
+                    <p><strong>Message:</strong> <span id="detail-message"></span></p>
+                    <p><strong>Status:</strong> <span id="detail-status"></span></p>
                 </div>
             </div>
         </div>

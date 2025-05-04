@@ -1,5 +1,6 @@
 document.addEventListener('DOMContentLoaded', function () {
-
+    console.log("content loaded");
+    
     const API_BASE="http://127.0.0.1:8000/api/admin"
     // Sidebar Buttons
     const dashboardBtn = document.getElementById('sidebar-dashboard');
@@ -27,6 +28,65 @@ document.addEventListener('DOMContentLoaded', function () {
     // Stat Cards
     const totalUsersCard = document.getElementById('totalUser');
     const totalRoutesCard = document.getElementById('totalRoute');
+
+    
+// Track last known pending count
+let lastPendingCount = 0;
+
+// Check and update pending request count
+async function checkForNewRequests() {
+    try {
+        const res = await fetch(`http://127.0.0.1:8000/api/pickup/pickup-requests`, {
+            method: 'GET',
+            credentials: 'include',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+
+        const data = await res.json();
+        // console.log(data);
+        
+        const pendingRequests = data.filter(req => req.status === 'PENDING');
+        // console.log(pendingRequests);
+        
+        const currentPendingCount = pendingRequests.length;
+
+        const badge = document.getElementById('request-notification-badge');
+
+        if (currentPendingCount > 0) {
+            badge.textContent = currentPendingCount;
+            badge.style.display = 'flex';
+        } else {
+            badge.style.display = 'none';
+        }
+
+        lastPendingCount = currentPendingCount;
+        // console.log(lastPendingCount);
+        
+    } catch (error) {
+        console.error('Error checking for new requests:', error);
+    }
+}
+
+// Clear badge when Manage Requests tab is clicked
+document.getElementById('sidebar-manage-request').addEventListener('click', async () => {
+    badgeCleared = true;
+    document.getElementById('request-notification-badge').style.display = 'none';
+    await loadPickupRequests(); // Load requests when viewing
+});
+
+// Start polling every 3 seconds
+setInterval(()=>{
+    // console.log("checking notification");
+    
+    checkForNewRequests();
+}, 1000);
+
+// Initial request count setup
+(async () => {
+    await checkForNewRequests(); // initialize count at start
+})();
 
     let globalUserId;
     let globalRouteId;
@@ -160,7 +220,7 @@ document.addEventListener('DOMContentLoaded', function () {
     // Navigation function to show the appropriate section
     function navigateToSection(section) {
         // Hide all sections
-        const sections = [dashboardSection, manageUserSection, manageRouteSection];
+        const sections = [dashboardSection, manageUserSection, manageRouteSection,manageRequestSection];
         sections.forEach(sec => sec.style.display = 'none');
 
         // Show the selected section
@@ -169,7 +229,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Function to load user data (backend integration required)
  // Function to load user data from the backend and populate the table
-    async function loadUserData(users) {
+async function loadUserData(users) {
     try {
         // Get the tbody element of the user table
         const tbody = document.querySelector('.user-table tbody');
@@ -580,15 +640,13 @@ routeUpdateButton.addEventListener('click', async() => {
 });
 
 
+// // Add this to your existing admin.js file
 
-
-// Add this to your existing admin.js file
-
-// ===== PICKUP REQUEST MANAGEMENT =====
+// // ===== PICKUP REQUEST MANAGEMENT =====
 const manageRequestBtn = document.getElementById('sidebar-manage-request');
 const manageRequestSection = document.getElementById('manage-request-section');
 
-// Event listener for manage request button
+// // Event listener for manage request button
 manageRequestBtn.addEventListener('click', async function() {
     navigateToSection(manageRequestSection);
     await loadPickupRequests();
@@ -618,41 +676,85 @@ async function loadPickupRequests() {
     }
 }
 
-// Function to render pickup requests in the table
 function renderPickupRequests(requests) {
     const tbody = document.querySelector('#manage-request-section tbody');
     tbody.innerHTML = ''; // Clear existing rows
 
     requests.forEach(request => {
         const row = document.createElement('tr');
-        
+
+        // Parse and format date and time
+        const createdAt = new Date(request.createdAt);
+        const requestDate = createdAt.toLocaleDateString();
+        const requestTime = createdAt.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
         // Format status with appropriate styling
         const statusCell = formatStatusCell(request.status);
-        
+
         row.innerHTML = `
             <td>${request.user?.name || 'N/A'}</td>
             <td>${request.user?.email || 'N/A'}</td>
-            <td>${new Date(request.createdAt).toLocaleDateString()}</td>
+            <td>${request.time}</td>
+            <td>${request.date}</td>
             <td>${request.address || 'N/A'}</td>
             <td>${statusCell}</td>
             <td>
-                ${request.status === 'PENDING' ? `
-                <i class='bx bx-check accept-icon' data-request-id="${request._id}" title="Accept"></i>
-                <i class='bx bx-x reject-icon' data-request-id="${request._id}" title="Reject"></i>
-                ` : 'No actions available'}
+                ${request.status === 'PENDING' ? 
+                    `<i class='bx bx-check accept-icon' data-request-id="${request._id}" title="Accept"></i>
+                     <i class='bx bx-x reject-icon' data-request-id="${request._id}" title="Reject"></i>`
+                : 'Resolved'}
             </td>
         `;
+
+        // Add event listener for row click to open the modal
+        row.addEventListener('click', function(event) {
+            // Ensure the row itself is clickable, not the action icons
+            if (!event.target.classList.contains('accept-icon') && !event.target.classList.contains('reject-icon')) {
+                openRequestModal(request);
+            }
+        });
+
         tbody.appendChild(row);
     });
 
     // Add event listeners to action buttons
     addRequestActionListeners();
-    
+
     // Add search functionality
     addRequestSearchListener();
 }
 
-// Helper function to format status cell with appropriate styling
+function openRequestModal(request) {
+    // Set request data in the modal
+    document.getElementById('detail-name').innerText = request.user?.name || 'N/A';
+    document.getElementById('detail-email').innerText = request.user?.email || 'N/A';
+    document.getElementById('detail-address').innerText = request.address || 'N/A';
+    document.getElementById('detail-landmark').innerText = request.landmark || 'N/A';
+    document.getElementById('detail-date').innerText = request.date || 'N/A';
+    document.getElementById('detail-time').innerText = request.time || 'N/A';
+    document.getElementById('detail-message').innerText = request.message || 'N/A';
+    document.getElementById('detail-status').innerText = request.status || 'N/A';
+
+    // Show the modal
+    const modal = document.getElementById('request-detail-modal');
+    modal.style.display = 'flex';
+}
+
+// Close the modal when the close button is clicked
+document.getElementById('close-modal').addEventListener('click', function() {
+    const modal = document.getElementById('request-detail-modal');
+    modal.style.display = 'none';
+});
+
+// Optionally, close the modal if the user clicks outside the modal content
+window.addEventListener('click', function(event) {
+    const modal = document.getElementById('request-detail-modal');
+    if (event.target === modal) {
+        modal.style.display = 'none';
+    }
+});
+
+// // Helper function to format status cell with appropriate styling
 function formatStatusCell(status) {
     const statusText = status || 'PENDING';
     let statusClass = '';
@@ -794,6 +896,7 @@ document.querySelector('#manage-request-section .search-wrapper button').addEven
         alert('Search failed');
     }
 });
+
 
 
 

@@ -10,6 +10,20 @@ const pickupRequestSchema = new mongoose.Schema({
         type: String,
         required: true
     },
+    landmark: {
+        type: String
+    },
+    date: {
+        type: String, // or use Date if you'd like to store it as a full Date object
+        required: true
+    },
+    time: {
+        type: String,
+        required: true
+    },
+    message: {
+        type: String
+    },
     status: {
         type: String,
         enum: ['PENDING', 'ACCEPTED', 'REJECTED'],

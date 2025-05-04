@@ -184,7 +184,7 @@ const handleRouteSelection = async (req, res) => {
 const handleGetSchedules = async (req,res)=>{
     const route = req.params.routeName;
     const routes =await vehicleRoutes.findOne({routeName:route})
-    console.log(routes)
+    // console.log(routes)
     // const schedules = routes.schedule;
     // console.log(schedules);
     res.status(200).json({"schedules":routes});  
@@ -192,11 +192,11 @@ const handleGetSchedules = async (req,res)=>{
 }
 
 const handleGetUserProfile = async (req,res)=>{
-    console.log("CP1")
+    // console.log("CP1")
     try {
         // Get the token from cookies (named "Authorization")
         const token = req.cookies.Authorization;
-        console.log("CP2 cookies")
+        // console.log("CP2 cookies")
 
         if (!token) {
             return res.status(401).json({ message: "Unauthorized: No token found in cookies" });

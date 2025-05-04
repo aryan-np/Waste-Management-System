@@ -29,10 +29,10 @@ const checkScheduleAndSendNotifications = async () => {
       // Loop through each schedule for today
       todaysSchedule.forEach(async (schedule) => {
         const [startTime, endTime] = schedule.time.split(' - ');
-        console.log(startTime+"-"+endTime);
+        // console.log(startTime+"-"+endTime);
         
         const notificationTime = moment(startTime, 'h:mm A').subtract(15, 'minutes').format('h:mm A');
-        console.log("Notification time>"+notificationTime)
+        // console.log("Notification time>"+notificationTime)
 
         // Check if current time matches the notification time (15 minutes before the collection start time)
         if (currentTime === notificationTime) {

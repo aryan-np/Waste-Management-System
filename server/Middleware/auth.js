@@ -11,7 +11,7 @@ const isAuthenticated = (req, res, next) => {
   
   const token = req.cookies.Authorization || 
                 req.headers.authorization?.replace('Bearer ', '');
-  console.log(token);
+  // console.log(token);
   
 
   if (!token) {
