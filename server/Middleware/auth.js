@@ -42,7 +42,7 @@ const isAuthenticated = (req, res, next) => {
         console.log(decoded);
         
         req.user = decoded;
-        console.log("AUthenticated") // Attach user data to request
+        // console.log("AUthenticated") // Attach user data to request
         next(); // Proceed to the next middleware/controller
     } catch (error) {
         return res.status(403).json({ message: "Invalid or expired token." });

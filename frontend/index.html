@@ -113,20 +113,24 @@
                 </form>
             </div>
 
-            <!-- OTP Form -->
-            <div class="form-box otp">
-                <form action="">
-                    <h2>Enter OTP</h2>
-                    <p>OTP has been sent to your email. Please enter the 6-digit code.</p>
-                    <div class="input-box">
-                        <span class="icon"><i class='bx bxs-key'></i></span>
-                        <input type="text" required maxlength="6" id="otp-input">
-                        <label>Enter OTP</label>
-                    </div>
-                    <button class="btn verify-otp">Verify OTP</button>
-                    <p class="resend-otp">Didn't receive OTP? <a href="#">Resend</a></p>
-                </form>
-            </div>
+          <!-- OTP Form -->
+        <div class="form-box otp">
+            <form action="">
+                <h2>Enter OTP</h2>
+                <p>OTP has been sent to your email. Please enter the 6-digit code.</p>
+                <div class="otp-input-container">
+                    <input type="text" class="otp-box" maxlength="1" />
+                    <input type="text" class="otp-box" maxlength="1" />
+                    <input type="text" class="otp-box" maxlength="1" />
+                    <input type="text" class="otp-box" maxlength="1" />
+                    <input type="text" class="otp-box" maxlength="1" />
+                    <input type="text" class="otp-box" maxlength="1" />
+                </div>
+                <button class="btn verify-otp">Verify OTP</button>
+                <p class="resend-otp">Didn't receive OTP? <a href="#">Resend</a></p>
+            </form>
+        </div>
+
         </div>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>

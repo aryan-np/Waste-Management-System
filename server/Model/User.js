@@ -17,6 +17,7 @@ const userSchema = new mongoose.Schema({
     number:{
         type: String,
         required: true,
+        default:123000000,
     },
     selectedRoute: {
         type: mongoose.Schema.Types.ObjectId,

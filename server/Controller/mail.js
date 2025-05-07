@@ -168,9 +168,9 @@ const handleResetPassword= async (req,res)=>{
 const handleGetCollectionNotification = async (req,res)=>{
     console.log("Route hit")
     const route = req.params.routeName;
-    console.log(route)
+    // console.log(route)
     const routes =await vehicleRoutes.findOne({routeName:route})
-    console.log(routes)
+    // console.log(routes)
     const schedules = routes.schedule;
     console.log(schedules);
     res.status(200).json({"schedules":schedules}); 

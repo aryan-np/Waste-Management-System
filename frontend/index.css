@@ -152,9 +152,11 @@ body {
     transform: translateY(-2px);
   }
   
-  .navbar a::after {
+
+
+  /* .navbar a::after {
     content: attr(data-tooltip);
-    white-space: pre-line; /* supports line breaks */
+    white-space: pre-line; 
     position: absolute;
     bottom: -55px;
     left: 50%;
@@ -169,12 +171,12 @@ body {
     transition: opacity 0.3s ease, bottom 0.3s ease;
     min-width: max-content;
     text-align: center;
-  }
+  } */
   
-  .navbar a:hover::after {
+  /* .navbar a:hover::after {
     opacity: 1;
     bottom: -65px;
-  }
+  } */
 
 /* Password feedback container */
 .password-feedback-container {
@@ -225,4 +227,27 @@ body {
 /* Error state for password mismatch */
 .mismatch {
   color: #f44336;
+}
+
+.otp-input-container {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin: 15px 0;
+}
+
+.otp-box {
+  width: 40px;
+  height: 50px;
+  text-align: center;
+  font-size: 20px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  outline: none;
+  transition: 0.2s border-color;
+}
+
+.otp-box:focus {
+  border-color: #08CC7B;
+  box-shadow: 0 0 5px #08CC7B;
 }

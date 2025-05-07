@@ -83,33 +83,51 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
 
-    buttons.verifyOtp.addEventListener("click", async (event) => {
-        event.preventDefault();
+    const otpInputs = document.querySelectorAll(".otp-box");
+otpInputs[0].focus();
 
-        const otpCode = forms.otp.querySelector("input#otp-input").value;
-
-        if (otpCode.length === 6) {
-            otpBody.otp = otpCode;
-
-            try {
-                const response = await axios.post(otpRoute, otpBody, {
-                    withCredentials: true
-                });
-
-                console.log("OTP verification successful:", response.data);
-                showPopup("✅ OTP Validation Success! Redirecting to Login...", 3000);
-
-                setTimeout(() => {
-                    showForm("login");
-                }, 3000);
-            } catch (error) {
-                console.error("OTP verification failed:", error.response || error);
-                alert("OTP verification failed. Please try again.");
-            }
-        } else {
-            alert("Please enter a valid 6-digit OTP.");
+// Auto move and backspace logic
+otpInputs.forEach((input, idx) => {
+    input.addEventListener("input", () => {
+        if (input.value.length === 1 && idx < otpInputs.length - 1) {
+            otpInputs[idx + 1].focus();
         }
     });
+
+    input.addEventListener("keydown", (e) => {
+        if (e.key === "Backspace" && !input.value && idx > 0) {
+            otpInputs[idx - 1].focus();
+        }
+    });
+});
+
+buttons.verifyOtp.addEventListener("click", async (event) => {
+    event.preventDefault();
+
+    const otpCode = Array.from(otpInputs).map(input => input.value).join("");
+
+    if (otpCode.length === 6) {
+        otpBody.otp = otpCode;
+
+        try {
+            const response = await axios.post(otpRoute, otpBody, {
+                withCredentials: true
+            });
+
+            console.log("OTP verification successful:", response.data);
+            showPopup("✅ OTP Validation Success! Redirecting to Login...", 3000);
+
+            setTimeout(() => {
+                showForm("login");
+            }, 3000);
+        } catch (error) {
+            console.error("OTP verification failed:", error.response || error);
+            alert("OTP verification failed. Please try again.");
+        }
+    } else {
+        alert("Please enter a valid 6-digit OTP.");
+    }
+});
     buttons.login.addEventListener("click", async (event) => {
         event.preventDefault();
     
