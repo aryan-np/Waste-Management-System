@@ -140,13 +140,15 @@ const generateOtpMail = ()=>{
     return {otp,otpMail}
 }
 
-const validateOtp = async(otp,email)=>{
-   const existingRequest =  await Otp.findOne({email})
-   if(existingRequest.valid){
-     if(otp===existingRequest.otp){ return true}
-   }
-   else return false;
-}
+const validateOtp = async (otp, email) => {
+    const existingRequest = await Otp.findOne({ email, valid: true }).sort({ createdAt: -1 }); // Get latest valid OTP
+    console.log(existingRequest);
+
+    if (existingRequest && otp === existingRequest.otp) {
+        return true;
+    }
+    return false;
+};
 
 const handleResetPassword= async (req,res)=>{
     const {email,newPassword} = req.body;
@@ -160,11 +162,29 @@ const handleResetPassword= async (req,res)=>{
     existingUser.password = hashedPassword;
     await existingUser.save(); // Save the updated user
         res.status(201).json({ message: "Password Updated successfully" });
+        console.log("reset success");
+        
     }
    else{
+       console.log("reset failed");
     return res.status(400).json({ message: "PAssword Update failed" });
+    
    }
 }
+
+const verifyOtp = async (req, res) => {
+    const { email, otp } = req.body;
+
+    const isValid = await validateOtp(otp, email);
+    if (isValid) {
+        // Optional: Invalidate OTP after use
+        await Otp.updateMany({ email }, { valid: false });
+        res.status(200).json({ message: "OTP verified" });
+    } else {
+        res.status(400).json({ message: "Invalid OTP" });
+    }
+};
+
 const handleGetCollectionNotification = async (req,res)=>{
     console.log("Route hit")
     const route = req.params.routeName;
@@ -176,4 +196,4 @@ const handleGetCollectionNotification = async (req,res)=>{
     res.status(200).json({"schedules":schedules}); 
 }
 // Export sendMail function to be used in other files
-module.exports = { handleForgotPassword , validateEmail,sendMail,generateOtpMail,validateOtp,handleResetPassword,handleGetCollectionNotification}
+module.exports = { handleForgotPassword,verifyOtp , validateEmail,sendMail,generateOtpMail,validateOtp,handleResetPassword,handleGetCollectionNotification}

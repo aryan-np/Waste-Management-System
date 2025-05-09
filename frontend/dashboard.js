@@ -191,6 +191,24 @@ function showError(message) {
         }
     }
 
+
+   
+    const routeImage = document.getElementById("route-image");
+
+    routeDropdown.addEventListener("change", () => {
+        const selectedText = routeDropdown.value;
+
+        // Extract route number using regex (e.g., "Route 1" => 1)
+        const match = selectedText.match(/Route\s*(\d+)/i);
+
+        if (match) {
+            const routeNum = match[1]; // e.g., "1"
+            routeImage.src = `Maps/route ${routeNum}.png`; // change folder if needed
+            routeImage.style.display = "block";
+        } else {
+            routeImage.style.display = "none";
+        }
+    });
     // === Get User Profile & Email ===
     async function getUserProfile() {
         const res = await fetch(`${API_BASE}/profile`, { credentials: 'include' });

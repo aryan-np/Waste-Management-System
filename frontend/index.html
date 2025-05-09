@@ -103,15 +103,35 @@
                         <input type="email" required>
                         <label>Email</label>
                     </div>
-                    <div class="input-box">
+                    <!-- <div class="input-box">
                         <span class="icon"><i class='bx bxs-lock-alt'></i></span>
                         <input type="password" required placeholder="Enter New Password">
                         <label>New Password</label>
-                    </div>
+                    </div> -->
                     <button class="btn send-reset-link">Send Reset Link</button>
                     <p><a href="#" class="back-to-login">Back to Login</a></p>
                 </form>
             </div>
+            <!-- Set New Password Form -->
+            <div class="form-box new-password" style="display:none;">
+                <form>
+                    <h2>Set New Password</h2>
+                    <div class="input-box">
+                        <span class="icon"><i class='bx bxs-lock-alt'></i></span>
+                        <input type="password" id="new-password" required>
+                        <label>Password</label>
+                    </div>
+            
+                    <div class="input-box">
+                        <span class="icon"><i class='bx bxs-check-shield'></i></span>
+                        <input type="password" id="confirm-new-password" required>
+                        <label>Confirm Password</label>
+                    </div>
+            
+                    <button class="btn set-password">Update Password</button>
+                </form>
+            </div>
+            
 
           <!-- OTP Form -->
         <div class="form-box otp">

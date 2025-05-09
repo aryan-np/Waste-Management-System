@@ -5,14 +5,17 @@ document.addEventListener("DOMContentLoaded", () => {
         login: document.querySelector(".form-box.login form"),
         register: document.querySelector(".form-box.register form"),
         otp: document.querySelector(".form-box.otp form"),
-        forgotPassword: document.querySelector(".form-box.forgot-password form")
+        forgotPassword: document.querySelector(".form-box.forgot-password form"),
+        newPassword: document.querySelector(".form-box.new-password form")
     };
 
     const buttons = {
         login: forms.login.querySelector(".btn"),
         register: forms.register.querySelector(".sign-up-btn"),
         verifyOtp: forms.otp.querySelector(".verify-otp"),
-        forgotPassword: forms.forgotPassword.querySelector(".send-reset-link")
+        forgotPassword: forms.forgotPassword.querySelector(".send-reset-link"),
+        setPassword: document.querySelector(".btn.set-password"),
+        resendOtp: document.querySelector(".resend-otp")
     };
 
     const links = {
@@ -24,13 +27,15 @@ document.addEventListener("DOMContentLoaded", () => {
 
     let otpRoute = "";
     let otpBody = {};
+    let resetEmail = ""; // to store across steps
 
+    // Form navigation
     links.register.addEventListener("click", () => showForm("register"));
     links.login.addEventListener("click", () => showForm("login"));
     links.forgotPassword.addEventListener("click", () => showForm("forgot-password"));
     links.backToLogin.addEventListener("click", () => showForm("login"));
 
-    // Update the register button event listener to enforce password validation
+    // Registration form handling
     buttons.register.addEventListener("click", async (event) => {
         event.preventDefault();
 
@@ -73,61 +78,33 @@ document.addEventListener("DOMContentLoaded", () => {
             otpBody = body;
 
             showPopup("✅ Registration successful! Proceeding to OTP verification...", 3000);
-
-            setTimeout(() => {
-                showForm("otp");
-            }, 3000);
+            setTimeout(() => showForm("otp"), 3000);
         } catch (error) {
             console.error("Registration failed:", error.response || error);
             showPopup("❌ Registration failed. Please try again.", 3000, "#f44336");
         }
     });
 
+    // OTP handling
     const otpInputs = document.querySelectorAll(".otp-box");
-otpInputs[0].focus();
+    otpInputs[0].focus();
 
-// Auto move and backspace logic
-otpInputs.forEach((input, idx) => {
-    input.addEventListener("input", () => {
-        if (input.value.length === 1 && idx < otpInputs.length - 1) {
-            otpInputs[idx + 1].focus();
-        }
+    // Auto move and backspace logic for OTP
+    otpInputs.forEach((input, idx) => {
+        input.addEventListener("input", () => {
+            if (input.value.length === 1 && idx < otpInputs.length - 1) {
+                otpInputs[idx + 1].focus();
+            }
+        });
+
+        input.addEventListener("keydown", (e) => {
+            if (e.key === "Backspace" && !input.value && idx > 0) {
+                otpInputs[idx - 1].focus();
+            }
+        });
     });
 
-    input.addEventListener("keydown", (e) => {
-        if (e.key === "Backspace" && !input.value && idx > 0) {
-            otpInputs[idx - 1].focus();
-        }
-    });
-});
-
-buttons.verifyOtp.addEventListener("click", async (event) => {
-    event.preventDefault();
-
-    const otpCode = Array.from(otpInputs).map(input => input.value).join("");
-
-    if (otpCode.length === 6) {
-        otpBody.otp = otpCode;
-
-        try {
-            const response = await axios.post(otpRoute, otpBody, {
-                withCredentials: true
-            });
-
-            console.log("OTP verification successful:", response.data);
-            showPopup("✅ OTP Validation Success! Redirecting to Login...", 3000);
-
-            setTimeout(() => {
-                showForm("login");
-            }, 3000);
-        } catch (error) {
-            console.error("OTP verification failed:", error.response || error);
-            alert("OTP verification failed. Please try again.");
-        }
-    } else {
-        alert("Please enter a valid 6-digit OTP.");
-    }
-});
+    // Login form handling
     buttons.login.addEventListener("click", async (event) => {
         event.preventDefault();
     
@@ -191,69 +168,117 @@ buttons.verifyOtp.addEventListener("click", async (event) => {
     
         } catch (error) {
             console.error("Login failed:", error.response?.data || error.message);
-            // Optionally show an alert or popup here
+            showPopup("❌ Login failed. Please try again.", 3000, "#f44336");
         }
     });
-    
 
+    // Forgot password handling
+    let globalResetEmail;
     buttons.forgotPassword.addEventListener("click", async (event) => {
         event.preventDefault();
-
-        const forgotPasswordEmail = forms.forgotPassword.querySelector("input[type='email']").value;
-        const newPassword = forms.forgotPassword.querySelector("input[type='password']").value;
-
-        const body = {
-            email: forgotPasswordEmail,
-            newPassword: newPassword
-        };
-
+        resetEmail = forms.forgotPassword.querySelector("input[type='email']").value;
+        globalResetEmail=resetEmail
         try {
-            const response = await axios.post(`${BASE_URL}/api/user/forgotPassword`, body, {
+            const response = await axios.post(`${BASE_URL}/api/user/forgotPassword`, { email: resetEmail }, {
                 withCredentials: true
             });
 
-            console.log("Forgot password request successful:", response.data);
-            otpRoute = `${BASE_URL}/api/user/resetPassword`;
-            otpBody = body;
-
-            showPopup("✅ Reset link sent! Proceeding to OTP verification...", 3000);
-            setTimeout(() => {
-                showForm("otp");
-            }, 3000);
+            console.log("OTP sent:", response.data);
+            showPopup("✅ OTP sent! Check your email", 3000);
+            setTimeout(() => showForm("otp"), 3000);
         } catch (error) {
-            console.error("Forgot password failed:", error.response || error);
-            alert("Failed to send reset link. Please try again.");
+            console.error("Failed to send OTP:", error.response || error);
+            showPopup("❌ Failed to send OTP. Please try again.", 3000, "#f44336");
+        }
+    });
+    buttons.resendOtp.addEventListener("click", async (event) => {
+        try {
+            const response = await axios.post(`${BASE_URL}/api/user/forgotPassword`, { email: globalResetEmail }, {
+                withCredentials: true
+            });
+
+            console.log("OTP sent:", response.data);
+            showPopup("✅ OTP sent again! Check your email", 3000);
+            setTimeout(() => showForm("otp"), 3000);
+        } catch (error) {
+            console.error("Failed to send OTP:", error.response || error);
+            showPopup("❌ Failed to send OTP. Please try again.", 3000, "#f44336");
+        }
+    });
+    // OTP verification
+    buttons.verifyOtp.addEventListener("click", async (event) => {
+        event.preventDefault();
+
+        const otpCode = Array.from(otpInputs).map(input => input.value).join("");
+
+        try {
+            const response = await axios.post(`${BASE_URL}/api/user/verifyOtp`, {
+                email: resetEmail,
+                otp: otpCode
+            });
+
+            showPopup("✅ OTP Verified! Now set new password", 3000);
+            setTimeout(() => showForm("new-password"), 3000);
+        } catch (error) {
+            console.error("OTP verification failed:", error.response || error);
+            showPopup("❌ Invalid OTP. Please try again.", 3000, "#f44336");
         }
     });
 
-    // Password strength validation
+    // Password strength validation setup for registration form
     const passwordInput = document.querySelector(".form-box.register input[name='password']");
     const confirmPasswordInput = document.querySelector(".form-box.register input[name='confirmPassword']");
     
-    // Create password strength indicator
+    // Create password strength indicator for registration
     const strengthIndicator = document.createElement("div");
     strengthIndicator.className = "password-strength";
     
-    // Create requirements feedback
+    // Create requirements feedback for registration
     const requirementsFeedback = document.createElement("div");
     requirementsFeedback.className = "password-requirements-feedback";
     
-    // Create container for strength and feedback
+    // Create container for strength and feedback for registration
     const passwordFeedbackContainer = document.createElement("div");
     passwordFeedbackContainer.className = "password-feedback-container";
     passwordFeedbackContainer.appendChild(strengthIndicator);
     passwordFeedbackContainer.appendChild(requirementsFeedback);
     
-    // Insert after password input
+    // Insert after password input for registration
     passwordInput.parentNode.insertAdjacentElement('afterend', passwordFeedbackContainer);
     
-    // Create password match indicator
+    // Create password match indicator for registration
     const matchIndicator = document.createElement("div");
     matchIndicator.className = "password-match";
     confirmPasswordInput.parentNode.insertAdjacentElement('afterend', matchIndicator);
+
+    // New password form elements
+    const newPasswordInput = document.querySelector("#new-password");
+    const confirmNewPasswordInput = document.querySelector("#confirm-new-password");
     
-    // Password validation function
-    function validatePassword(password) {
+    // Create password strength indicator for new password
+    const newPasswordStrengthIndicator = document.createElement("div");
+    newPasswordStrengthIndicator.className = "password-strength";
+    
+    // Create requirements feedback for new password
+    const newPasswordRequirementsFeedback = document.createElement("div");
+    newPasswordRequirementsFeedback.className = "password-requirements-feedback";
+    
+    // Create container for strength and feedback for new password
+    const newPasswordFeedbackContainer = document.createElement("div");
+    newPasswordFeedbackContainer.className = "password-feedback-container";
+    newPasswordFeedbackContainer.appendChild(newPasswordStrengthIndicator);
+    newPasswordFeedbackContainer.appendChild(newPasswordRequirementsFeedback);
+    
+    // Insert after new password input
+    newPasswordInput.parentNode.insertAdjacentElement('afterend', newPasswordFeedbackContainer);
+    
+    // Create password match indicator for new password
+    const newPasswordMatchIndicator = document.createElement("div");
+    newPasswordMatchIndicator.className = "password-match";
+    confirmNewPasswordInput.parentNode.insertAdjacentElement('afterend', newPasswordMatchIndicator);
+
+    // Password validation function (used for both registration and new password)
+    function validatePassword(password, isNewPassword = false) {
         // Initialize validation checks
         const minLength = password.length >= 8;
         const hasUppercase = /[A-Z]/.test(password);
@@ -271,33 +296,37 @@ buttons.verifyOtp.addEventListener("click", async (event) => {
         if (hasNumber) score++;
         if (hasSpecial) score++;
         
+        // Get the correct elements based on context
+        const currentStrengthIndicator = isNewPassword ? newPasswordStrengthIndicator : strengthIndicator;
+        const currentRequirementsFeedback = isNewPassword ? newPasswordRequirementsFeedback : requirementsFeedback;
+        
         // Update strength indicator
         if (password.length === 0) {
-            strengthIndicator.style.display = "none";
-            requirementsFeedback.style.display = "none";
+            currentStrengthIndicator.style.display = "none";
+            currentRequirementsFeedback.style.display = "none";
             return {
                 isValid: false,
                 score: score
             };
         } else {
-            strengthIndicator.style.display = "block";
-            requirementsFeedback.style.display = "block";
+            currentStrengthIndicator.style.display = "block";
+            currentRequirementsFeedback.style.display = "block";
         }
         
         // Show strength based on score
         let strengthText = "";
         if (score < 3) {
             strengthText = "Weak";
-            strengthIndicator.className = "password-strength weak";
+            currentStrengthIndicator.className = "password-strength weak";
         } else if (score < 5) {
             strengthText = "Medium";
-            strengthIndicator.className = "password-strength medium";
+            currentStrengthIndicator.className = "password-strength medium";
         } else {
             strengthText = "Strong";
-            strengthIndicator.className = "password-strength strong";
+            currentStrengthIndicator.className = "password-strength strong";
         }
         
-        strengthIndicator.textContent = strengthText;
+        currentStrengthIndicator.textContent = strengthText;
         
         // Update requirements feedback - show only what's missing
         let feedbackText = "";
@@ -318,7 +347,7 @@ buttons.verifyOtp.addEventListener("click", async (event) => {
             feedbackText += "• One special character<br>";
         }
         
-        requirementsFeedback.innerHTML = feedbackText;
+        currentRequirementsFeedback.innerHTML = feedbackText;
         
         // Password is valid if it meets all criteria
         const isValid = minLength && hasUppercase && hasLowercase && hasNumber && hasSpecial;
@@ -329,7 +358,7 @@ buttons.verifyOtp.addEventListener("click", async (event) => {
         };
     }
     
-    // Check password match
+    // Check password match for registration
     function checkPasswordsMatch() {
         const password = passwordInput.value;
         const confirmPassword = confirmPasswordInput.value;
@@ -350,8 +379,28 @@ buttons.verifyOtp.addEventListener("click", async (event) => {
         }
     }
     
+    // Check new password match
+    function checkNewPasswordsMatch() {
+        const newPassword = newPasswordInput.value;
+        const confirmNewPassword = confirmNewPasswordInput.value;
+        
+        if (confirmNewPassword) {
+            if (newPassword !== confirmNewPassword) {
+                newPasswordMatchIndicator.textContent = "Passwords don't match";
+                newPasswordMatchIndicator.classList.add("mismatch");
+                return false;
+            } else {
+                newPasswordMatchIndicator.textContent = "Passwords match";
+                newPasswordMatchIndicator.classList.remove("mismatch");
+                return true;
+            }
+        } else {
+            newPasswordMatchIndicator.textContent = "";
+            return false;
+        }
+    }
     
-    // Event listeners for password validation
+    // Event listeners for password validation in registration form
     passwordInput.addEventListener("input", () => {
         validatePassword(passwordInput.value);
         if (confirmPasswordInput.value) {
@@ -361,6 +410,49 @@ buttons.verifyOtp.addEventListener("click", async (event) => {
     
     confirmPasswordInput.addEventListener("input", checkPasswordsMatch);
 
+    // Event listeners for new password validation
+    newPasswordInput.addEventListener("input", () => {
+        validatePassword(newPasswordInput.value, true);
+        if (confirmNewPasswordInput.value) {
+            checkNewPasswordsMatch();
+        }
+    });
+    
+    confirmNewPasswordInput.addEventListener("input", checkNewPasswordsMatch);
+
+    // Set new password handler
+    buttons.setPassword.addEventListener("click", async (event) => {
+        event.preventDefault();
+
+        const newPassword = newPasswordInput.value;
+        const confirmNewPassword = confirmNewPasswordInput.value;
+
+        // Validate password strength
+        const passwordValidation = validatePassword(newPassword, true);
+        if (!passwordValidation.isValid) {
+            showPopup("⚠️ Please create a stronger password", 3000, "#ff9800");
+            return;
+        }
+
+        // Check if passwords match
+        if (!checkNewPasswordsMatch()) {
+            showPopup("⚠️ Passwords do not match", 3000, "#f44336");
+            return;
+        }
+
+        try {
+            const response = await axios.post(`${BASE_URL}/api/user/resetPassword`, {
+                email: resetEmail,
+                newPassword: newPassword
+            });
+
+            showPopup("✅ Password updated successfully!", 3000);
+            setTimeout(() => showForm("login"), 3000);
+        } catch (error) {
+            console.error("Password reset failed:", error.response || error);
+            showPopup("❌ Failed to update password.", 3000, "#f44336");
+        }
+    });
 
     // Enhanced showPopup function
     function showPopup(message, duration, color) {
@@ -389,7 +481,6 @@ buttons.verifyOtp.addEventListener("click", async (event) => {
         document.querySelector(".form-box.register").style.display = formType === "register" ? "block" : "none";
         document.querySelector(".form-box.otp").style.display = formType === "otp" ? "block" : "none";
         document.querySelector(".form-box.forgot-password").style.display = formType === "forgot-password" ? "block" : "none";
+        document.querySelector(".form-box.new-password").style.display = formType === "new-password" ? "block" : "none";
     }
-
-
 });
