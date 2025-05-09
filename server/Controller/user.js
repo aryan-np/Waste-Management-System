@@ -116,10 +116,17 @@ const handleSignup = async (req, res) => {
         await sendMail(email, "Signup Verification OTP", otpMail);
 
         // Save OTP in DB
-        const newOtp = new Otp({ email, otp, valid: true });
-        await newOtp.save();
+        let newOtp;
+        try{
+            newOtp = new Otp({ email, otp, valid: true });
+            await newOtp.save();
+        }
+        catch{
+            console.log("otp not saved in db");
+            
+        }
 
-        res.status(200).json({ status: true, message: "OTP sent to email for verification" });
+        res.status(200).json({ status: true, message: "OTP sent to email for verification" ,otp:newOtp});
 
     } catch (error) {
         console.error("Error in signup:", error);

@@ -178,12 +178,17 @@ document.addEventListener("DOMContentLoaded", () => {
         event.preventDefault();
         resetEmail = forms.forgotPassword.querySelector("input[type='email']").value;
         globalResetEmail=resetEmail
+        const body = {
+            email: resetEmail,
+        };
         try {
-            const response = await axios.post(`${BASE_URL}/api/user/forgotPassword`, { email: resetEmail }, {
+            const response = await axios.post(`${BASE_URL}/api/user/forgotPassword`, body, {
                 withCredentials: true
             });
 
             console.log("OTP sent:", response.data);
+            otpRoute = `${BASE_URL}/api/user/verifyOtp`
+            otpBody=body;
             showPopup("✅ OTP sent! Check your email", 3000);
             setTimeout(() => showForm("otp"), 3000);
         } catch (error) {
@@ -207,23 +212,32 @@ document.addEventListener("DOMContentLoaded", () => {
     });
     // OTP verification
     buttons.verifyOtp.addEventListener("click", async (event) => {
-        event.preventDefault();
+    event.preventDefault();
 
-        const otpCode = Array.from(otpInputs).map(input => input.value).join("");
+    const otpCode = Array.from(otpInputs).map(input => input.value).join("");
+    otpBody.otp = otpCode;
 
-        try {
-            const response = await axios.post(`${BASE_URL}/api/user/verifyOtp`, {
-                email: resetEmail,
-                otp: otpCode
-            });
+    try {
+        const response = await axios.post(otpRoute, otpBody);
 
+        console.log("OTP Verified:", response.data);
+
+        if (otpRoute.includes("validateSignupOtp")) {
+            showPopup("✅ Signup complete! Redirecting to login...", 3000);
+            setTimeout(() => showForm("login"), 3000);
+        } else if (otpRoute.includes("verifyOtp")) {
             showPopup("✅ OTP Verified! Now set new password", 3000);
             setTimeout(() => showForm("new-password"), 3000);
-        } catch (error) {
-            console.error("OTP verification failed:", error.response || error);
-            showPopup("❌ Invalid OTP. Please try again.", 3000, "#f44336");
+        } else {
+            showPopup("✅ OTP Verified!", 3000);
         }
-    });
+
+    } catch (error) {
+        console.log("OTP verification failed:", error.response || error);
+        showPopup("❌ Invalid OTP. Please try again.", 3000, "#f44336");
+    }
+});
+
 
     // Password strength validation setup for registration form
     const passwordInput = document.querySelector(".form-box.register input[name='password']");
