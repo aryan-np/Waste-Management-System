@@ -109,23 +109,33 @@ const handleAddRoute = async (req, res) => {
   try {
     const { routeName, locations, schedule } = req.body;
 
+    // Validate input
     if (!routeName || !Array.isArray(locations) || locations.length === 0) {
       return res.status(400).send('Route name and at least one location are required');
     }
 
+    // Check for duplicate route name
+    const existingRoute = await VehicleRoute.findOne({ routeName: routeName.trim() });
+    if (existingRoute) {
+      return res.status(409).send('A route with this name already exists');
+    }
+
+    // Save new route
     const newRoute = new VehicleRoute({
-      routeName,
+      routeName: routeName.trim(),
       locations,
       schedule
     });
 
     await newRoute.save();
     res.status(201).send('Route added successfully');
+    
   } catch (error) {
     console.error(error);
     res.status(500).send('Server error');
   }
 };
+
 
 // Modify Route
 const handleModifyRoute = async (req, res) => {

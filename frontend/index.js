@@ -36,54 +36,59 @@ document.addEventListener("DOMContentLoaded", () => {
     links.backToLogin.addEventListener("click", () => showForm("login"));
 
     // Registration form handling
-    buttons.register.addEventListener("click", async (event) => {
-        event.preventDefault();
+   buttons.register.addEventListener("click", async (event) => {
+    event.preventDefault();
 
-        const registerName = forms.register.querySelector("input[name='full-name']").value;
-        const registerEmail = forms.register.querySelector("input[name='email']").value;
-        const registerPassword = forms.register.querySelector("input[name='password']").value;
-        const confirmPassword = forms.register.querySelector("input[name='confirmPassword']").value;
-        const contact = forms.register.querySelector("input[name='number']").value;
+    // Fetch input values
+    const registerName = forms.register.querySelector("input[name='full-name']").value.trim();
+    const registerEmail = forms.register.querySelector("input[name='email']").value.trim();
+    const registerPassword = forms.register.querySelector("input[name='password']").value;
+    const confirmPassword = forms.register.querySelector("input[name='confirmPassword']").value;
+    const contact = forms.register.querySelector("input[name='number']").value.trim();
 
-        // Validate password
-        const passwordValidation = validatePassword(registerPassword);
-        
-        // Check if password meets all requirements
-        if (!passwordValidation.isValid) {
-            showPopup("⚠️ Please create a stronger password", 3000, "#ff9800");
-            return;
-        }
-        
-        // Check if passwords match
-        if (registerPassword !== confirmPassword) {
-            showPopup("⚠️ Passwords do not match", 3000, "#f44336");
-            return;
-        }
+    // Frontend validation
+    if (!registerName || !registerEmail || !registerPassword || !confirmPassword || !contact) {
+        showPopup("⚠️ All fields are required", 3000, "#ff9800");
+        return;
+    }
 
-        // Continue with registration
-        const body = {
-            name: registerName,
-            email: registerEmail,
-            password: registerPassword,
-            number: contact
-        };
+    const passwordValidation = validatePassword(registerPassword);
+    if (!passwordValidation.isValid) {
+        showPopup("⚠️ Please create a stronger password", 3000, "#ff9800");
+        return;
+    }
 
-        try {
-            const response = await axios.post(`${BASE_URL}/api/user/signup`, body, {
-                withCredentials: true
-            });
+    if (registerPassword !== confirmPassword) {
+        showPopup("⚠️ Passwords do not match", 3000, "#f44336");
+        return;
+    }
 
-            console.log("Registration successful:", response.data);
-            otpRoute = `${BASE_URL}/api/user/validateSignupOtp`;
-            otpBody = body;
+    const body = {
+        name: registerName,
+        email: registerEmail,
+        password: registerPassword,
+        number: contact
+    };
 
-            showPopup("✅ Registration successful! Proceeding to OTP verification...", 3000);
-            setTimeout(() => showForm("otp"), 3000);
-        } catch (error) {
-            console.error("Registration failed:", error.response || error);
-            showPopup("❌ Registration failed. Please try again.", 3000, "#f44336");
-        }
-    });
+    try {
+        const response = await axios.post(`${BASE_URL}/api/user/signup`, body, {
+            withCredentials: true
+        });
+
+        console.log("Registration successful:", response.data);
+        otpRoute = `${BASE_URL}/api/user/validateSignupOtp`;
+        otpBody = body;
+
+        showPopup("✅ Registration successful! Proceeding to OTP verification...", 3000);
+        setTimeout(() => showForm("otp"), 3000);
+
+    } catch (error) {
+        const msg = error.response?.data?.message || error.message || "Something went wrong";
+        console.error("Registration failed:", error);
+        showPopup(`❌ Registration failed. ${msg}`, 3000, "#f44336");
+    }
+});
+
 
     // OTP handling
     const otpInputs = document.querySelectorAll(".otp-box");
@@ -217,7 +222,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const otpCode = Array.from(otpInputs).map(input => input.value).join("");
     otpBody.otp = otpCode;
 
-    try {
+    // try {
         const response = await axios.post(otpRoute, otpBody);
 
         console.log("OTP Verified:", response.data);
@@ -232,10 +237,10 @@ document.addEventListener("DOMContentLoaded", () => {
             showPopup("✅ OTP Verified!", 3000);
         }
 
-    } catch (error) {
-        console.log("OTP verification failed:", error.response || error);
-        showPopup("❌ Invalid OTP. Please try again.", 3000, "#f44336");
-    }
+    // } catch (error) {
+    //     console.log("OTP verification failed:", error.response || error);
+    //     showPopup("❌ Invalid OTP. Please try again.", 3000, "#f44336");
+    // }
 });
 
 

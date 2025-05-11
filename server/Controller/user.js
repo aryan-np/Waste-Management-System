@@ -105,6 +105,8 @@ const handleSignup = async (req, res) => {
         // Validate email
         const emailCheck = await validateEmail(email);
         if (!emailCheck.valid) {
+            console.log("email error");
+            
             return res.status(400).json({ message: emailCheck.reason });
         }
 

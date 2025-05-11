@@ -596,7 +596,9 @@ routeUpdateButton.addEventListener('click', async() => {
                 },
                 body: JSON.stringify(route) // Correct format for POST body
             });
-    
+            if(response.status===409){
+                alert('Route name alredy exists');
+            }
             if (!response.ok) {
                 throw new Error('Failed to fetch users');
             }
