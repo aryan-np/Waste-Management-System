@@ -396,9 +396,41 @@ form.addEventListener("submit", async function (event) {
             document.getElementById('greet').textContent =`Welcome, ${profile.userName || 'N/A'}`;
     
             if (!userRoute) {
-                changeRouteSidebarOption.click();
-                showStatus('Please select a route to continue.', 'blue');
+    changeRouteSidebarOption.click(); // Open Route Selection section
+    showStatus('Please select a route to continue.', 'blue');
+
+    // Attach handler to Select Route button
+    selectRouteButton.addEventListener('click', async () => {
+        try {
+            await changeRoute(); // function that sends the selected route to server
+            const updatedProfile = await getUserProfile(); // Fetch updated profile
+
+            if (updatedProfile.userRoute) {
+                // Update dropdown with new route
+                document.getElementById('dropdown-route').textContent = updatedProfile.userRoute.routeName;
+
+                // Update greeting and route display
+                currentRouteDisplay1.textContent = `Your current route: ${updatedProfile.userRoute.locations.join(" ---> ")}`;
+                currentRouteDisplay1.style.color = 'green';
+
+                loadSchedule(updatedProfile.userRoute.routeName); // Load schedule for new route
+
+                // Redirect to dashboard
+                document.querySelectorAll('.sidebar-menu li').forEach(item => item.classList.remove('active'));
+                document.getElementById('sidebar-dashboard').classList.add('active');
+                document.querySelectorAll('.content-section').forEach(section => section.style.display = 'none');
+                document.getElementById('dashboard-section').style.display = 'block';
+
+                showStatus('✅ Route selected! Redirecting to dashboard...', 'green');
             } else {
+                showStatus('❌ Route selection failed. Try again.', 'red');
+            }
+        } catch (err) {
+            console.error("Error during route update:", err);
+            showStatus('❌ Something went wrong while selecting the route.', 'red');
+        }
+    }, { once: true }); // Ensure it's triggered only once
+} else {
                 // currentRouteDisplay.textContent = `Your current route: ${userRoute.locations.join(" ---> ")}`;
                 // currentRouteDisplay.style.color = 'green';
     
