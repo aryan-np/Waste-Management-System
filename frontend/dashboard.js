@@ -220,6 +220,10 @@ function showError(message) {
         const profile = await getUserProfile();
         return profile.userEmail;
     }
+    async function getUserRoute() {
+        const profile = await getUserProfile();
+        return profile.userRoute.locations.join(" ---> ");
+    }
 
     // === Load Routes ===
     async function loadRoutes() {
@@ -325,6 +329,12 @@ const dateInput = document.getElementById("pickup-date");
 const timeInput = document.getElementById("pickup-time");
 const messageInput = document.getElementById("pickup-message");
 const statusMessage = document.getElementById("pickup-status");
+getUserRoute().then(routeString => {
+  addressInput.value=routeString
+}).catch(err => {
+  console.error(err);
+});
+
 
 form.addEventListener("submit", async function (event) {
     event.preventDefault();

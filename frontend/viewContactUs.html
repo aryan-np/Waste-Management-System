@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Admin - View Contact Messages</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f9f9f9;
+      padding: 2rem;
+      max-width: 900px;
+      margin: auto;
+    }
+    h1 {
+      color: #2e7d32;
+      margin-bottom: 1.5rem;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: #fff;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    th, td {
+      padding: 12px 15px;
+      border: 1px solid #ddd;
+      text-align: left;
+    }
+    th {
+      background-color: #08cc7b;
+      color: white;
+    }
+    tbody tr:nth-child(even) {
+      background-color: #f3f9f5;
+    }
+    .no-messages {
+      text-align: center;
+      padding: 2rem;
+      color: #666;
+    }
+  </style>
+</head>
+<body>
+  <h1>Contact Messages</h1>
+
+  <table id="messagesTable">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Email</th>
+        <th>Message</th>
+        <th>Received At</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td colspan="4" class="no-messages">Loading messages...</td></tr>
+    </tbody>
+  </table>
+
+  <script>
+    async function fetchMessages() {
+      try {
+        const res = await fetch('http://127.0.0.1:8000/api/admin/contact-messages');
+        if (!res.ok) throw new Error('Network response was not ok');
+        const messages = await res.json();
+
+        const tbody = document.querySelector('#messagesTable tbody');
+        tbody.innerHTML = '';
+
+        if (messages.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="4" class="no-messages">No messages found.</td></tr>';
+          return;
+        }
+
+        messages.forEach(msg => {
+          const tr = document.createElement('tr');
+
+          tr.innerHTML = `
+            <td>${escapeHtml(msg.name)}</td>
+            <td>${escapeHtml(msg.email)}</td>
+            <td>${escapeHtml(msg.message)}</td>
+            <td>${new Date(msg.createdAt).toLocaleString()}</td>
+          `;
+          tbody.appendChild(tr);
+        });
+      } catch (err) {
+        console.error('Error fetching messages:', err);
+        const tbody = document.querySelector('#messagesTable tbody');
+        tbody.innerHTML = '<tr><td colspan="4" class="no-messages">Failed to load messages.</td></tr>';
+      }
+    }
+
+    // Simple HTML escape to avoid XSS
+    function escapeHtml(text) {
+      if (!text) return '';
+      return text.replace(/[&<>"']/g, function(m) {
+        return {
+          '&': '&amp;',
+          '<': '&lt;',
+          '>': '&gt;',
+          '"': '&quot;',
+          "'": '&#39;'
+        }[m];
+      });
+    }
+
+    fetchMessages();
+  </script>
+</body>
+</html>

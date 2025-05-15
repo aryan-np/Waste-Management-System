@@ -50,30 +50,6 @@
       text-decoration: none;
     }
 
-    /* .navbar a::after {
-      content: attr(data-tooltip);
-      white-space: pre-line;
-      position: absolute;
-      bottom: -55px;
-      left: 50%;
-      transform: translateX(-50%);
-      background: rgba(8, 204, 123, 0.9);
-      color: white;
-      padding: 8px 12px;
-      border-radius: 5px;
-      font-size: 12px;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.3s ease, bottom 0.3s ease;
-      min-width: max-content;
-      text-align: center;
-    }
-
-    .navbar a:hover::after {
-      opacity: 1;
-      bottom: -65px;
-    } */
-
     .contact-section {
       padding: 2rem;
       max-width: 1000px;
@@ -137,7 +113,6 @@
       margin-top: 3rem;
     }
 
-    /* Popup notification styles */
     .popup {
       position: fixed;
       top: 20px;
@@ -163,16 +138,54 @@
       to { opacity: 0; }
     }
   </style>
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      const form = document.getElementById('contactForm');
+      const popup = document.getElementById('thankYouPopup');
+
+      form.addEventListener('submit', async function (e) {
+        e.preventDefault();
+
+        const formData = {
+          name: form.elements['name'].value.trim(),
+          email: form.elements['email'].value.trim(),
+          message: form.elements['message'].value.trim()
+        };
+
+        console.log(formData); // Debug: See values in browser console
+
+        try {
+          const response = await fetch('http://127.0.0.1:8000/api/user/contact', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(formData)
+          });
+
+          if (response.ok) {
+            popup.style.display = 'block';
+            form.reset();
+            setTimeout(() => {
+              popup.style.display = 'none';
+            }, 3000);
+          } else {
+            const errorData = await response.json();
+            alert('Error: ' + (errorData.error || 'Failed to send message.'));
+          }
+        } catch (error) {
+          alert('Network error: ' + error.message);
+        }
+      });
+    });
+  </script>
 </head>
 <body>
   <header>
     <h1><i class='bx bxs-trash'></i> Waste Management System</h1>
     <nav class="navbar">
-      <a href="mission.html" data-tooltip="♻️ Our mission is to reduce waste\n🌿 Our vision is a clean and green Nepal">Mission & Vision</a>
-      <a href="recycling.html" data-tooltip="🧾 Learn how to sort and recycle\n♻️ Know what can and can't be recycled">Recycling Info</a>
-      <a href="about.html" data-tooltip="Learn more about us">About us</a>
-      <a href="index.html" data-tooltip="🔐 Login to your account\n📱 Access your dashboard">Login</a>
-
+      <a href="mission.html">Mission & Vision</a>
+      <a href="recycling.html">Recycling Info</a>
+      <a href="about.html">About Us</a>
+      <a href="index.html">Login</a>
     </nav>
   </header>
 
@@ -209,23 +222,5 @@
   <footer>
     <p>&copy; 2025 GreenCycle Waste Solutions. All rights reserved.</p>
   </footer>
-
-  <script>
-    document.getElementById('contactForm').addEventListener('submit', function(e) {
-      e.preventDefault();
-
-
-      const popup = document.getElementById('thankYouPopup');
-      popup.style.display = 'block';
-
-
-      this.reset();
-
-
-      setTimeout(() => {
-        popup.style.display = 'none';
-      }, 3000);
-    });
-  </script>
 </body>
 </html>

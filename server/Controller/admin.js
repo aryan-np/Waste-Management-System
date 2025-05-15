@@ -3,6 +3,8 @@ const bcrypt = require('bcrypt');
 const User = require('../Model/User');
 const VehicleRoute = require('../Model/vehicle');
 
+const {validateEmail}=require("../Controller/user")
+const nodemailer = require('nodemailer');
 // -------------------- User Handlers --------------------
 
 // Add User
@@ -223,7 +225,70 @@ const validateAdminLogin = async (req, res) => {
     res.status(500).send('Server error');
   }
 };
+const otpStore = {}; 
+const handleAdminSignup = async (req, res) => {
+  console.log("handleAdminSignup");
+  
+  const { name, email, password, otp } = req.body;
 
+  // Step 1: If no OTP provided, assume it's first step (Send OTP)
+  if (!otp) {
+    const { valid, reason } = await validateEmail(email);
+    if (!valid) return res.status(400).json({ error: reason });
+
+    const existingUser = await User.findOne({ email });
+
+if (existingUser) {
+  if (existingUser.role === 'user') {
+    await User.deleteOne({ email }); // Delete the normal user to allow admin creation
+  } else {
+    return res.status(409).json({ error: "Admin already exists." });
+  }
+}
+    const generatedOtp = Math.floor(100000 + Math.random() * 900000).toString();
+    console.log(generatedOtp);
+    
+    otpStore[email] = { otp: generatedOtp, expires: Date.now() + 5 * 60 * 1000 }; // 5 min expiry
+
+    // Send OTP (simplified)
+    const transporter = nodemailer.createTransport({
+      service: 'gmail',
+      auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS
+      }
+    });
+
+    await transporter.sendMail({
+      from: `"Waste Management" <${process.env.EMAIL_USER}>`,
+      to: email,
+      subject: "Your OTP Code",
+      text: `Your OTP code is: ${generatedOtp}`
+    });
+
+    return res.status(200).json({ message: "OTP sent to email." });
+  }
+
+  // Step 2: If OTP is provided, verify and create admin
+  const record = otpStore[email];
+  if (!record || record.otp !== otp || Date.now() > record.expires) {
+    return res.status(400).json({ error: "Invalid or expired OTP." });
+  }
+
+  const hashedPassword = await bcrypt.hash(password, 10);
+
+  const newAdmin = new User({
+    name,
+    email,
+    password: hashedPassword,
+    role:"admin"
+  });
+
+  await newAdmin.save();
+  delete otpStore[email];
+
+  res.status(201).json({ message: "Admin created successfully." });
+};
 // -------------------- Exports --------------------
 
 module.exports = {
@@ -242,5 +307,6 @@ module.exports = {
   searchRoute,
 
   // Admin
-  validateAdminLogin
+  validateAdminLogin,
+  handleAdminSignup
 };

@@ -358,3 +358,23 @@
     justify-content: center;
     align-items: center;
 }
+.button-group {
+    margin-top: 20px;
+    display: flex;
+    gap: 15px;
+}
+
+.action-button {
+    padding: 12px 20px;
+    background: #08CC7B;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+.action-button:hover {
+    background: #06b469;
+}

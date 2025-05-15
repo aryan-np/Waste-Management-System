@@ -28,7 +28,7 @@ const createPickupRequest = async (req, res) => {
 
 // View all requests (admin only)
 const viewPickupRequests = async (req, res) => {
-    console.log("veiwing");
+    // console.log("veiwing");
     
     try {
         const user = await User.findById(req.user.userId);
@@ -47,7 +47,9 @@ const {sendMail} = require('../Controller/mail'); // assumed mail util
 
 const updatePickupRequest = async (req, res) => {
     try {
-        const { status } = req.body;
+        const { status,message} = req.body;
+        console.log(status,message);
+        
         const { id } = req.params;
 
         if (!['ACCEPTED', 'REJECTED'].includes(status)) {
@@ -78,7 +80,8 @@ const updatePickupRequest = async (req, res) => {
 
         // Send email
         const subject = `Your Pickup Request has been ${status}`;
-        const text = `Hello ${updatedPickup.user.name},\n\nYour waste pickup request has been ${status.toLowerCase()}.\n\nRegards,\nWaste Management Team`;
+        const text = `Hello ${updatedPickup.user.name},\n\nYour waste pickup request has been ${status.toLowerCase()}.\n
+        \n${message}\n\nRegards,\nWaste Management Team`;
 
         await sendMail(updatedPickup.user.email, subject, text);
 

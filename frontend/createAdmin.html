@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Create New Admin</title>
+  <link rel="stylesheet" href="createAdmin.css" />
+</head>
+<body>
+  <div class="form-container">
+    <h2>Create New Admin</h2>
+
+   <form id="admin-form">
+  <input type="text" id="name" placeholder="Full Name" required />
+  <input type="email" id="email" placeholder="Email Address" required />
+  <input type="password" id="password" placeholder="Password" required />
+  <input type="password" id="confirm-password" placeholder="Confirm Password" required />
+  <button type="submit">Send OTP</button>
+  <div class="message" id="message"></div>
+</form>
+
+    <form id="otp-form" class="otp-section">
+      <input type="text" id="otp" placeholder="Enter 6-digit OTP" maxlength="6" required />
+      <button type="submit">Verify & Create Admin</button>
+      <div class="message" id="otp-message"></div>
+    </form>
+  </div>
+
+  <script src="createAdmin.js"></script>
+</body>
+</html>

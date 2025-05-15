@@ -239,16 +239,18 @@ async function loadUserData(users) {
 
         // Loop through the users and create a row for each
         users.forEach(user => {
+            console.log(user);
+            
             // Create a table row
             const row = document.createElement('tr');
-            
+            // <td>${user.selectedRoute ? user.selectedRoute.name : 'N/A'}</td> //removed from below table data entry 
             // Create table data cells for each property
             row.innerHTML = `
                 <td>${user._id}</td>
                 <td>${user.name}</td>
                 <td>${user.email}</td>
                 <td>Rs. ${user.dueAmount}</td>
-                <td>${user.selectedRoute ? user.selectedRoute.name : 'N/A'}</td>
+                
                 <td>${user.role}</td>
                 <td>
                     <i class='bx bx-edit' data-user-id="${user._id}"></i>
@@ -838,6 +840,8 @@ async function updateRequestStatus(requestId, status) {
         return;
     }
 
+    const message = prompt("Enter a message to attach to this status (optional):") || '';
+
     try {
         const response = await fetch(`http://127.0.0.1:8000/api/pickup/pickup-request/${requestId}`, {
             method: 'PUT',
@@ -845,7 +849,10 @@ async function updateRequestStatus(requestId, status) {
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ status })
+            body: JSON.stringify({
+                status: status,
+                message: message
+            })
         });
 
         if (!response.ok) {
@@ -898,7 +905,6 @@ document.querySelector('#manage-request-section .search-wrapper button').addEven
         alert('Search failed');
     }
 });
-
 
 
 
