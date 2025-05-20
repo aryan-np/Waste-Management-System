@@ -536,7 +536,8 @@ userUpdateButton.addEventListener('click', async () => {
                 console.log("ERROR");
                 
             }
-    } else {
+    } 
+    else {
         console.log("Updating user:", user);
         try {
             
@@ -606,6 +607,7 @@ routeUpdateButton.addEventListener('click', async() => {
             }
             if (response.ok) {
                 alert('Route added sucessfully.');
+                manageRouteBtn.click();
             }
         }
             catch{

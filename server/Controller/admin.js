@@ -42,16 +42,19 @@ const handleAddUser = async (req, res) => {
 // Modify User
 const handleModifyUser = async (req, res) => {
   try {
-    const { userId, name, email, dueAmount } = req.body;
+    const { userId, name, email,password, dueAmount } = req.body;
     console.log(userId);
     console.log(name);
-    
+    // Hash password
+        const salt = await bcrypt.genSalt(10);
+        const hashedPassword = await bcrypt.hash(password, salt);
     
     const user = await User.findById(userId);
     if (!user) return res.status(404).send('User not found');
 
     if (name) user.name = name;
     if (email) user.email = email;
+    if (password) user.password=hashedPassword;
     if (dueAmount !== undefined) user.dueAmount = dueAmount;
 
     await user.save();

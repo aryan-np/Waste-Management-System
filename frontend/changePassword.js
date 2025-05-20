@@ -138,6 +138,7 @@ form.addEventListener("submit", async (event) => {
       newPasswordStrengthIndicator.style.display = "none";
       newPasswordRequirementsFeedback.style.display = "none";
       newPasswordMatchIndicator.textContent = "";
+      window
     } else {
       alert(`❌ Failed to update password: ${data.message || "Unknown error"}`);
     }
