@@ -55,7 +55,7 @@ const handleModifyUser = async (req, res) => {
     if (name) user.name = name;
     if (email) user.email = email;
     if (password) user.password=hashedPassword;
-    if (dueAmount !== undefined) user.dueAmount = dueAmount;
+    if (dueAmount) user.dueAmount = dueAmount;
 
     await user.save();
     res.status(200).send('User updated successfully');

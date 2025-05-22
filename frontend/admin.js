@@ -556,6 +556,7 @@ userUpdateButton.addEventListener('click', async () => {
             }
             if (response.ok) {
                 alert('User edited sucessfully.');
+                manageUserBtn.click();
             }
         }
             catch{
@@ -678,7 +679,7 @@ async function loadPickupRequests() {
         renderPickupRequests(requests);
     } catch (error) {
         console.error('Error loading pickup requests:', error);
-        alert('Failed to load pickup requests');
+        // alert('Failed to load pickup requests');
     }
 }
 
@@ -698,8 +699,8 @@ function renderPickupRequests(requests) {
         const statusCell = formatStatusCell(request.status);
 
         row.innerHTML = `
-            <td>${request.user?.name || 'N/A'}</td>
-            <td>${request.user?.email || 'N/A'}</td>
+            <td>${request.userName || 'N/A'}</td>
+            <td>${request.userEmail || 'N/A'}</td>
             <td>${request.time}</td>
             <td>${request.date}</td>
             <td>${request.address || 'N/A'}</td>
@@ -732,8 +733,8 @@ function renderPickupRequests(requests) {
 
 function openRequestModal(request) {
     // Set request data in the modal
-    document.getElementById('detail-name').innerText = request.user?.name || 'N/A';
-    document.getElementById('detail-email').innerText = request.user?.email || 'N/A';
+    document.getElementById('detail-name').innerText = request.userName || 'N/A';
+    document.getElementById('detail-email').innerText = request.userEmail || 'N/A';
     document.getElementById('detail-address').innerText = request.address || 'N/A';
     document.getElementById('detail-landmark').innerText = request.landmark || 'N/A';
     document.getElementById('detail-date').innerText = request.date || 'N/A';

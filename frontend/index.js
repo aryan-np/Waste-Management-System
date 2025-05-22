@@ -80,7 +80,7 @@ document.addEventListener("DOMContentLoaded", () => {
         otpBody = body;
 
         showPopup("✅ Registration successful! Proceeding to OTP verification...", 3000);
-        setTimeout(() => showForm("otp"), 3000);
+        setTimeout(() => showForm("otp"), 1000);
 
     } catch (error) {
         const msg = error.response?.data?.message || error.message || "Something went wrong";
@@ -195,7 +195,7 @@ document.addEventListener("DOMContentLoaded", () => {
             otpRoute = `${BASE_URL}/api/user/verifyOtp`
             otpBody=body;
             showPopup("✅ OTP sent! Check your email", 3000);
-            setTimeout(() => showForm("otp"), 3000);
+            showForm("otp")
         } catch (error) {
             console.error("Failed to send OTP:", error.response || error);
             showPopup("❌ Failed to send OTP. Please try again.", 3000, "#f44336");
@@ -209,7 +209,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
             console.log("OTP sent:", response.data);
             showPopup("✅ OTP sent again! Check your email", 3000);
-            setTimeout(() => showForm("otp"), 3000);
+            showForm("otp");
         } catch (error) {
             console.error("Failed to send OTP:", error.response || error);
             showPopup("❌ Failed to send OTP. Please try again.", 3000, "#f44336");
@@ -229,10 +229,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
         if (otpRoute.includes("validateSignupOtp")) {
             showPopup("✅ Signup complete! Redirecting to login...", 3000);
-            setTimeout(() => showForm("login"), 3000);
+            setTimeout(() => showForm("login"), 1000);
         } else if (otpRoute.includes("verifyOtp")) {
             showPopup("✅ OTP Verified! Now set new password", 3000);
-            setTimeout(() => showForm("new-password"), 3000);
+            setTimeout(() => showForm("new-password"), 1000);
         } else {
             showPopup("✅ OTP Verified!", 3000);
         }
@@ -466,7 +466,7 @@ document.addEventListener("DOMContentLoaded", () => {
             });
 
             showPopup("✅ Password updated successfully!", 3000);
-            setTimeout(() => showForm("login"), 3000);
+            setTimeout(() => showForm("login"), 1000);
         } catch (error) {
             console.error("Password reset failed:", error.response || error);
             showPopup("❌ Failed to update password.", 3000, "#f44336");

@@ -285,7 +285,7 @@ const handleLogout = (req, res) => {
 
 const handleChangePassword = async (req, res) => {
   try {
-    const userId = req.user.userId;  // From your middleware
+    const userId = req.user.userId;  // From middleware
     const { oldPassword, newPassword } = req.body;
 
     if (!oldPassword || !newPassword) {

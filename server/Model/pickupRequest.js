@@ -1,9 +1,12 @@
 const mongoose = require('mongoose');
 
 const pickupRequestSchema = new mongoose.Schema({
-    user: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'User',
+    userName: {
+        type: String,
+        required: true
+    },
+    userEmail: {
+        type: String,
         required: true
     },
     address: {

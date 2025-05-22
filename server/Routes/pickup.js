@@ -15,6 +15,6 @@ router.post('/pickup-request', isAuthenticated, createPickupRequest);
 router.get('/pickup-requests', isAuthenticated, viewPickupRequests);
 
 // Admin accepts or rejects a request
-router.put('/pickup-request/:id', isAuthenticated, updatePickupRequest);
+router.put('/pickup-request/:id', updatePickupRequest);
 
 module.exports = router;

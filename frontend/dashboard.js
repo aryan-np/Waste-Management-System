@@ -215,7 +215,10 @@ function showError(message) {
         if (!res.ok) throw new Error('Not authenticated');
         return await res.json();
     }
-
+     async function getUserName() {
+        const profile = await getUserProfile();
+        return profile.userName;
+    }
     async function getUserEmail() {
         const profile = await getUserProfile();
         return profile.userEmail;
@@ -352,14 +355,26 @@ form.addEventListener("submit", async function (event) {
         return;
     }
 
+    // ✅ Combine date and time to check if it's in the future
+    const selectedDateTime = new Date(`${date}T${time}`);
+    const currentDateTime = new Date();
+
+    if (selectedDateTime < currentDateTime) {
+        alert("❌ You cannot select a past date and time.");
+        return;
+    }
+
     const requestData = {
+        userName:await getUserName(),
+        userEmail:await getUserEmail(),
         address,
         landmark,
         date,
         time,
         message
     };
-
+    console.log(requestData);
+    
     try {
         const response = await fetch("http://127.0.0.1:8000/api/pickup/pickup-request", {
             method: "POST",

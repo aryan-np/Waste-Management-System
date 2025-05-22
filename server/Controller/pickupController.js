@@ -4,7 +4,7 @@ const User = require('../Model/User');
 // Create pickup request
 const createPickupRequest = async (req, res) => {
     try {
-        const { address, landmark, date, time, message } = req.body;
+        const { userName,userEmail,address, landmark, date, time, message } = req.body;
         const userId = req.user.userId;
 
         if (!address || !date || !time) {
@@ -12,7 +12,8 @@ const createPickupRequest = async (req, res) => {
         }
 
         const newRequest = await PickupRequest.create({
-            user: userId,
+            userName,
+            userEmail,
             address,
             landmark,
             date,
@@ -36,7 +37,9 @@ const viewPickupRequests = async (req, res) => {
         //     return res.status(403).json({ message: 'Access denied. Admins only.' });
         // }
 
-        const requests = await PickupRequest.find().populate('user', 'name email number');
+        const requests = await PickupRequest.find();
+        // console.log(requests);
+        
         res.json(requests);
     } catch (err) {
         res.status(500).json({ error: err.message });
@@ -48,21 +51,13 @@ const {sendMail} = require('../Controller/mail'); // assumed mail util
 const updatePickupRequest = async (req, res) => {
     try {
         const { status,message} = req.body;
-        console.log(status,message);
         
         const { id } = req.params;
-
         if (!['ACCEPTED', 'REJECTED'].includes(status)) {
             return res.status(400).json({ error: 'Invalid status' });
         }
-
-        const admin = await User.findById(req.user.userId);
-        // Uncomment this if admin check is needed
-        // if (!admin || admin.role !== 'admin') {
-        //     return res.status(403).json({ message: 'Access denied. Admins only.' });
-        // }
-
-        const existingPickup = await PickupRequest.findById(id).populate('user');
+        // const admin = await User.findById(req.user.userId);
+        const existingPickup = await PickupRequest.findById(id);
         if (!existingPickup) {
             return res.status(404).json({ message: 'Pickup request not found' });
         }
@@ -71,19 +66,18 @@ const updatePickupRequest = async (req, res) => {
             return res.status(400).json({ message: 'Request is already resolved and cannot be modified.' });
         }
 
-        // Now safely update status only
         const updatedPickup = await PickupRequest.findByIdAndUpdate(
             id,
             { status },
             { new: true, runValidators: true }
-        ).populate('user');
+        );
 
         // Send email
         const subject = `Your Pickup Request has been ${status}`;
-        const text = `Hello ${updatedPickup.user.name},\n\nYour waste pickup request has been ${status.toLowerCase()}.\n
+        const text = `Hello ${updatedPickup.userName},\n\nYour waste pickup request has been ${status.toLowerCase()}.\n
         \n${message}\n\nRegards,\nWaste Management Team`;
 
-        await sendMail(updatedPickup.user.email, subject, text);
+        await sendMail(updatedPickup.userEmail, subject, text);
 
         res.json({ message: `Request ${status.toLowerCase()}`, request: updatedPickup });
     } catch (err) {
