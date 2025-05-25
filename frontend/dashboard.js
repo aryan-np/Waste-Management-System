@@ -304,6 +304,9 @@ function showError(message) {
     // === Logout ===
     logoutButton?.addEventListener('click', handleLogout);
     async function handleLogout() {
+         const confirmLogout = confirm("Do you want to log out?");
+    if (!confirmLogout) return; // If user clicks "Cancel", exit the function
+
         try {
             await fetch(`${API_BASE}/logout`, {
                 method: 'POST',

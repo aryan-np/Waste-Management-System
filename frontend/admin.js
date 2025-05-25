@@ -148,19 +148,22 @@ setInterval(()=>{
         loadRouteData(routes);
     });
 
-    logoutBtn.addEventListener('click', async function () {
-        // Mockup function for logout (integrate backend logic for actual logout)
-        try {
-            await fetch(`http://127.0.0.1:8000/api/user/logout`, {
-                method: 'POST',
-                credentials: 'include'
-            });
-            window.location.href = 'index.html';
-        } catch (err) {
-            console.error('Logout error:', err);
-            alert('Logout failed. Try again.');
-        }
-    });
+logoutBtn.addEventListener('click', async function () {
+    // alert("HEre")
+    const confirmLogout = confirm("Do you want to log out?");
+    if (!confirmLogout) return; // If user clicks "Cancel", exit the function
+
+    try {
+        await fetch(`http://127.0.0.1:8000/api/user/logout`, {
+            method: 'POST',
+            credentials: 'include'
+        });
+        window.location.href = 'index.html';
+    } catch (err) {
+        console.error('Logout error:', err);
+        alert('Logout failed. Try again.');
+    }
+});
 
 
     document.getElementById('user-search-icon').addEventListener('click', async () => {
